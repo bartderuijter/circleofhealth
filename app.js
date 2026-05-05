@@ -271,11 +271,17 @@ async function init() {
 
   const params = new URLSearchParams(location.search);
   if (params.get('edit') === 'true') {
-    const pw = prompt('Voer het wachtwoord in voor edit mode:');
-    if (pw === EDIT_PASSWORD) {
+    const stored = sessionStorage.getItem('editAuth');
+    if (stored === EDIT_PASSWORD) {
       enterEditMode();
     } else {
-      alert('Onjuist wachtwoord.');
+      const pw = prompt('Voer het wachtwoord in voor edit mode:');
+      if (pw === EDIT_PASSWORD) {
+        sessionStorage.setItem('editAuth', pw);
+        enterEditMode();
+      } else {
+        alert('Onjuist wachtwoord.');
+      }
     }
   }
 
