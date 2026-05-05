@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Circle of Health</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header id="site-header">
+    <div class="header-inner">
+
+      <!-- Logo: toont afbeelding als die opgeslagen is, anders tekst -->
+      <a href="#" class="logo" id="logo-link" aria-label="Circle of Health – naar boven">
+        <img id="logo-img" src="" alt="Circle of Health logo" hidden />
+        <span id="logo-text">Circle of Health</span>
+      </a>
+
+      <!-- Logo upload zone (alleen zichtbaar in edit mode) -->
+      <div id="logo-upload-zone" class="logo-upload-zone" hidden>
+        <input type="file" id="logo-file-input" accept="image/*" hidden />
+        <span class="logo-upload-hint">Klik of sleep een logo</span>
+      </div>
+
+      <nav id="main-nav" aria-label="Hoofdnavigatie">
+        <ul>
+          <li><a href="#over">Over mij</a></li>
+          <li><a href="#diensten">Diensten</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu openen" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-wrap">
+      <div
+        class="hero-photo photo-zone"
+        id="hero-photo"
+        data-field="heroPhoto"
+        data-placeholder="Klik om een achtergrondafbeelding toe te voegen"
+        role="img"
+        aria-label="Hero achtergrond"
+      ></div>
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow editable" data-field="heroEyebrow" data-placeholder="Health &amp; Voedingscoach">Health &amp; Voedingscoach</p>
+      <h1 class="editable" data-field="heroTitle" data-placeholder="Voed je lichaam,<br>voed je ziel.">Voed je lichaam,<br>voed je ziel.</h1>
+      <p class="hero-sub editable" data-field="heroSub" data-placeholder="Samen op weg naar een gezond en evenwichtig leven.">Samen op weg naar een gezond en evenwichtig leven.</p>
+      <a href="#contact" class="btn">Neem contact op</a>
+    </div>
+  </section>
+
+  <!-- ===================== OVER MIJ ===================== -->
+  <section id="over" class="section section-over">
+    <div class="container two-col">
+
+      <div class="photo-col">
+        <div
+          class="portrait-wrap photo-zone"
+          id="about-photo"
+          data-field="aboutPhoto"
+          data-placeholder="Klik om een portretfoto toe te voegen"
+          role="img"
+          aria-label="Portretfoto"
+        ></div>
+      </div>
+
+      <div class="text-col">
+        <p class="section-label editable" data-field="aboutLabel" data-placeholder="Over mij">Over mij</p>
+        <h2 class="editable" data-field="aboutTitle" data-placeholder="Hallo, ik ben [naam]">Hallo, ik ben [naam]</h2>
+        <div class="rich-text">
+          <p class="editable" data-field="aboutP1" data-placeholder="Schrijf hier een korte introductie over jezelf. Wie ben je en wat drijft je als coach?">
+            Schrijf hier een korte introductie over jezelf. Wie ben je en wat drijft je als coach?
+          </p>
+          <p class="editable" data-field="aboutP2" data-placeholder="Vertel iets over je achtergrond, opleiding of persoonlijke reis richting gezondheid.">
+            Vertel iets over je achtergrond, opleiding of persoonlijke reis richting gezondheid.
+          </p>
+          <p class="editable" data-field="aboutP3" data-placeholder="Wat maakt jouw aanpak uniek? Hoe begeleid je je klanten?">
+            Wat maakt jouw aanpak uniek? Hoe begeleid je je klanten?
+          </p>
+        </div>
+        <div class="badge-row">
+          <span class="badge editable" data-field="badge1" data-placeholder="Gecertificeerd voedingscoach">Gecertificeerd voedingscoach</span>
+          <span class="badge editable" data-field="badge2" data-placeholder="Health coach">Health coach</span>
+          <span class="badge editable" data-field="badge3" data-placeholder="10+ jaar ervaring">10+ jaar ervaring</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DIENSTEN ===================== -->
+  <section id="diensten" class="section section-diensten">
+    <div class="container">
+      <p class="section-label centered editable" data-field="servicesLabel" data-placeholder="Diensten">Diensten</p>
+      <h2 class="centered editable" data-field="servicesTitle" data-placeholder="Wat ik voor je kan betekenen">Wat ik voor je kan betekenen</h2>
+      <p class="section-intro centered editable" data-field="servicesIntro" data-placeholder="Iedere reis begint met één stap. Kies de begeleiding die bij jou past.">
+        Iedere reis begint met één stap. Kies de begeleiding die bij jou past.
+      </p>
+
+      <div class="cards">
+
+        <article class="card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 1 0 0 18A9 9 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3 class="editable" data-field="card1Title" data-placeholder="Kennismakingsgesprek">Kennismakingsgesprek</h3>
+          <p class="editable" data-field="card1Text" data-placeholder="Een vrijblijvend gesprek van 30 minuten om te ontdekken of we een goede match zijn en wat jij nodig hebt.">
+            Een vrijblijvend gesprek van 30 minuten om te ontdekken of we een goede match zijn en wat jij nodig hebt.
+          </p>
+          <p class="card-price editable" data-field="card1Price" data-placeholder="Gratis">Gratis</p>
+        </article>
+
+        <article class="card card-featured">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          </div>
+          <h3 class="editable" data-field="card2Title" data-placeholder="Persoonlijk traject">Persoonlijk traject</h3>
+          <p class="editable" data-field="card2Text" data-placeholder="Een intensief 3-maands coachingtraject op maat: voedings- en leefstijlplan, wekelijkse check-ins en onbeperkte support via e-mail.">
+            Een intensief 3-maands coachingtraject op maat: voedings- en leefstijlplan, wekelijkse check-ins en onbeperkte support via e-mail.
+          </p>
+          <p class="card-price editable" data-field="card2Price" data-placeholder="Vanaf € 395">Vanaf € 395</p>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </div>
+          <h3 class="editable" data-field="card3Title" data-placeholder="Workshop voeding">Workshop voeding</h3>
+          <p class="editable" data-field="card3Text" data-placeholder="Een interactieve groepsworkshop over bewust eten, maaltijdplanning en de verbinding tussen voeding en welzijn.">
+            Een interactieve groepsworkshop over bewust eten, maaltijdplanning en de verbinding tussen voeding en welzijn.
+          </p>
+          <p class="card-price editable" data-field="card3Price" data-placeholder="€ 65 p.p.">€ 65 p.p.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <section id="contact" class="section section-contact">
+    <div class="container two-col contact-cols">
+
+      <div class="contact-info">
+        <p class="section-label editable" data-field="contactLabel" data-placeholder="Contact">Contact</p>
+        <h2 class="editable" data-field="contactTitle" data-placeholder="Laten we kennismaken">Laten we kennismaken</h2>
+        <p class="editable" data-field="contactIntro" data-placeholder="Heb je een vraag of wil je meer weten over mijn aanbod? Stuur me een bericht en ik neem zo snel mogelijk contact met je op.">
+          Heb je een vraag of wil je meer weten over mijn aanbod? Stuur me een bericht en ik neem zo snel mogelijk contact met je op.
+        </p>
+        <ul class="contact-details">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span class="editable" data-field="contactEmail" data-placeholder="info@circleofhealth.nl">info@circleofhealth.nl</span>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.38 2 2 0 0 1 3.6 1.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span class="editable" data-field="contactPhone" data-placeholder="+31 6 00 00 00 00">+31 6 00 00 00 00</span>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span class="editable" data-field="contactLocation" data-placeholder="Nederland">Nederland</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="contact-form-wrap">
+        <form id="contact-form" novalidate>
+          <div class="form-row">
+            <label for="cf-name">Naam</label>
+            <input type="text" id="cf-name" name="name" placeholder="Jouw naam" required autocomplete="name" />
+          </div>
+          <div class="form-row">
+            <label for="cf-email">E-mailadres</label>
+            <input type="email" id="cf-email" name="email" placeholder="jouw@email.nl" required autocomplete="email" />
+          </div>
+          <div class="form-row">
+            <label for="cf-message">Bericht</label>
+            <textarea id="cf-message" name="message" placeholder="Schrijf hier je bericht…" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-full" id="cf-submit">Verstuur bericht</button>
+          <p id="cf-feedback" class="form-feedback" aria-live="polite" hidden></p>
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <p class="editable" data-field="footerText" data-placeholder="© 2025 Circle of Health · Alle rechten voorbehouden">
+      © 2025 Circle of Health · Alle rechten voorbehouden
+    </p>
+  </footer>
+
+  <!-- ===================== EDIT MODE UI ===================== -->
+  <div id="edit-bar" class="edit-bar" hidden>
+    <span class="edit-bar-label">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Edit mode actief
+    </span>
+    <button id="edit-save-btn" class="edit-save-btn">Opgeslagen ✓</button>
+  </div>
+
+  <button id="edit-fab" class="edit-fab" title="Edit mode" hidden aria-label="Edit mode">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  </button>
+
+  <!-- Hidden file input for photo zones -->
+  <input type="file" id="photo-file-input" accept="image/*" hidden />
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
