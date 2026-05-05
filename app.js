@@ -1,31 +1,30 @@
 // ============================================================
 //  Circle of Health — app.js
-//  Vanilla JS + Firebase (Firestore + Storage)
+//  Vanilla JS + Firebase Firestore (geen Storage)
+//  Foto's worden client-side gecomprimeerd en als base64
+//  data-URI opgeslagen in Firestore.
 // ============================================================
 
 import FIREBASE_CONFIG from './firebase-config.js';
 
-// ── Firebase SDK (CDN ESM shim) ──────────────────────────────
-import { initializeApp }                    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+// ── Firebase SDK ─────────────────────────────────────────────
+import { initializeApp }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp }
-                                             from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import { getStorage, ref, uploadBytes, getDownloadURL }
-                                             from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 // ── Config ───────────────────────────────────────────────────
 const EDIT_PASSWORD = 'circleofhealth2025'; // ← pas dit aan
 
 // ── Init ─────────────────────────────────────────────────────
-const app     = initializeApp(FIREBASE_CONFIG);
-const db      = getFirestore(app);
-const storage = getStorage(app);
+const app = initializeApp(FIREBASE_CONFIG);
+const db  = getFirestore(app);
 
 const CONTENT_DOC = doc(db, 'content', 'site');
 
 // ── State ────────────────────────────────────────────────────
-let isEditMode = false;
-let saveTimer  = null;
-let activePhotoField = null;
+let saveTimer        = null;
+let activePhotoZone  = null;
 
 // ── DOM helpers ──────────────────────────────────────────────
 const $  = (sel, ctx = document) => ctx.querySelector(sel);
@@ -36,53 +35,41 @@ async function loadContent() {
   try {
     const snap = await getDoc(CONTENT_DOC);
     if (!snap.exists()) return;
-    const data = snap.data();
-    applyContent(data);
+    applyContent(snap.data());
   } catch (e) {
     console.warn('Could not load Firestore content:', e.message);
   }
 }
 
 function applyContent(data) {
-  // Text fields
   $$('[data-field]').forEach(el => {
     const field = el.dataset.field;
     if (!field || el.classList.contains('photo-zone')) return;
-    if (data[field] !== undefined && data[field] !== '') {
-      el.innerHTML = data[field];
-    }
+    if (data[field]) el.innerHTML = data[field];
   });
 
-  // Logo
-  if (data.logoUrl) {
-    showLogoImage(data.logoUrl);
-  }
+  if (data.logoUrl) showLogoImage(data.logoUrl);
 
-  // Photo zones
   $$('.photo-zone').forEach(zone => {
-    const field = zone.dataset.field;
-    if (data[field]) {
-      applyPhotoToZone(zone, data[field]);
-    }
+    const url = data[zone.dataset.field];
+    if (url) applyPhotoToZone(zone, url);
   });
 }
 
-// ── 2. Save content to Firestore ─────────────────────────────
+// ── 2. Save text content ──────────────────────────────────────
 function scheduleSave() {
   clearTimeout(saveTimer);
   setSaveStatus('Opslaan…');
-  saveTimer = setTimeout(saveContent, 1200);
+  saveTimer = setTimeout(saveTextContent, 1200);
 }
 
-async function saveContent() {
+async function saveTextContent() {
   const payload = {};
-
   $$('[data-field]').forEach(el => {
     const field = el.dataset.field;
     if (!field || el.classList.contains('photo-zone')) return;
     payload[field] = el.innerHTML.trim();
   });
-
   try {
     await setDoc(CONTENT_DOC, payload, { merge: true });
     setSaveStatus('Opgeslagen ✓');
@@ -99,99 +86,79 @@ function setSaveStatus(msg) {
   btn.classList.toggle('saving', msg === 'Opslaan…');
 }
 
-// ── 3. Image resize helper ────────────────────────────────────
-function resizeImage(file, maxWidth = 1600) {
+// ── 3. Image → base64 via Canvas (max 800px, JPEG 0.75) ──────
+function imageFileToBase64(file) {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    const url = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
-      URL.revokeObjectURL(url);
-      const scale   = Math.min(1, maxWidth / img.naturalWidth);
-      const w       = Math.round(img.naturalWidth  * scale);
-      const h       = Math.round(img.naturalHeight * scale);
-      const canvas  = document.createElement('canvas');
+      URL.revokeObjectURL(objectUrl);
+      const scale  = Math.min(1, 800 / img.naturalWidth);
+      const w      = Math.round(img.naturalWidth  * scale);
+      const h      = Math.round(img.naturalHeight * scale);
+      const canvas = document.createElement('canvas');
       canvas.width  = w;
       canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('toBlob failed')), 'image/jpeg', 0.88);
+      resolve(canvas.toDataURL('image/jpeg', 0.75));
     };
     img.onerror = reject;
-    img.src = url;
+    img.src = objectUrl;
   });
 }
 
-// ── 4. Upload image → Storage, save URL → Firestore ──────────
-async function uploadAndSaveImage(file, field) {
-  setSaveStatus('Afbeelding uploaden…');
+// ── 4. Save a single image field to Firestore ────────────────
+async function saveImageField(field, dataUri) {
+  setSaveStatus('Afbeelding opslaan…');
   try {
-    const blob      = await resizeImage(file);
-    const storageRef = ref(storage, `images/${field}_${Date.now()}.jpg`);
-    await uploadBytes(storageRef, blob, { contentType: 'image/jpeg' });
-    const url = await getDownloadURL(storageRef);
-    await setDoc(CONTENT_DOC, { [field]: url }, { merge: true });
+    await setDoc(CONTENT_DOC, { [field]: dataUri }, { merge: true });
     setSaveStatus('Opgeslagen ✓');
-    return url;
   } catch (e) {
-    setSaveStatus('Upload mislukt ✗');
+    setSaveStatus('Fout bij opslaan ✗');
     console.error(e);
-    return null;
   }
 }
 
 // ── 5. Photo zone helpers ─────────────────────────────────────
-function applyPhotoToZone(zone, url) {
-  zone.style.backgroundImage = `url('${url}')`;
+function applyPhotoToZone(zone, dataUri) {
+  zone.style.backgroundImage = `url('${dataUri}')`;
   zone.classList.add('has-photo');
 }
 
 async function handlePhotoFile(file, zone) {
   if (!file || !file.type.startsWith('image/')) return;
-  const field = zone.dataset.field;
-  // Optimistic preview
-  const previewUrl = URL.createObjectURL(file);
-  applyPhotoToZone(zone, previewUrl);
-  // Upload
-  const url = await uploadAndSaveImage(file, field);
-  if (url) {
-    applyPhotoToZone(zone, url);
-    URL.revokeObjectURL(previewUrl);
-  }
+  const dataUri = await imageFileToBase64(file);
+  applyPhotoToZone(zone, dataUri);
+  await saveImageField(zone.dataset.field, dataUri);
 }
 
-// ── 6. Logo image helpers ─────────────────────────────────────
-function showLogoImage(url) {
-  const img  = $('#logo-img');
-  const text = $('#logo-text');
-  img.src    = url;
-  img.hidden = false;
+// ── 6. Logo helpers ───────────────────────────────────────────
+function showLogoImage(dataUri) {
+  const img   = $('#logo-img');
+  const text  = $('#logo-text');
+  img.src     = dataUri;
+  img.hidden  = false;
   text.hidden = true;
 }
 
 async function handleLogoFile(file) {
   if (!file || !file.type.startsWith('image/')) return;
-  const previewUrl = URL.createObjectURL(file);
-  showLogoImage(previewUrl);
-  const url = await uploadAndSaveImage(file, 'logoUrl');
-  if (url) {
-    showLogoImage(url);
-    URL.revokeObjectURL(previewUrl);
-  }
+  const dataUri = await imageFileToBase64(file);
+  showLogoImage(dataUri);
+  await saveImageField('logoUrl', dataUri);
 }
 
-// ── 7. Edit mode setup ────────────────────────────────────────
+// ── 7. Edit mode ──────────────────────────────────────────────
 function enterEditMode() {
-  isEditMode = true;
   document.body.classList.add('edit-mode');
-  $('#edit-bar').hidden  = false;
-  $('#edit-fab').hidden  = false;
+  $('#edit-bar').hidden = false;
+  $('#edit-fab').hidden = false;
 
-  // Make text nodes editable
   $$('.editable').forEach(el => {
     el.contentEditable = 'true';
     el.addEventListener('input', scheduleSave);
   });
 
-  // Photo zones — click to open file picker
   $$('.photo-zone').forEach(zone => {
     zone.addEventListener('click', () => triggerPhotoInput(zone));
     zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
@@ -203,10 +170,9 @@ function enterEditMode() {
     });
   });
 
-  // Shared hidden file input for photo zones
   const photoInput = $('#photo-file-input');
   photoInput.addEventListener('change', () => {
-    if (activePhotoField) handlePhotoFile(photoInput.files[0], activePhotoField);
+    if (activePhotoZone) handlePhotoFile(photoInput.files[0], activePhotoZone);
     photoInput.value = '';
   });
 
@@ -229,15 +195,15 @@ function enterEditMode() {
 }
 
 function triggerPhotoInput(zone) {
-  activePhotoField = zone;
+  activePhotoZone = zone;
   $('#photo-file-input').click();
 }
 
 // ── 8. Contact form ───────────────────────────────────────────
 async function handleContactSubmit(e) {
   e.preventDefault();
-  const form     = e.target;
-  const feedback = $('#cf-feedback');
+  const form      = e.target;
+  const feedback  = $('#cf-feedback');
   const submitBtn = $('#cf-submit');
 
   const name    = form.name.value.trim();
@@ -249,7 +215,7 @@ async function handleContactSubmit(e) {
     return;
   }
 
-  submitBtn.disabled = true;
+  submitBtn.disabled    = true;
   submitBtn.textContent = 'Versturen…';
 
   try {
@@ -263,18 +229,18 @@ async function handleContactSubmit(e) {
     showFeedback(feedback, 'Er ging iets mis. Probeer het later opnieuw.', 'error');
     console.error(err);
   } finally {
-    submitBtn.disabled  = false;
+    submitBtn.disabled    = false;
     submitBtn.textContent = 'Verstuur bericht';
   }
 }
 
 function showFeedback(el, msg, type) {
   el.textContent = msg;
-  el.hidden = false;
+  el.hidden      = false;
   el.style.color = type === 'error' ? '#c0392b' : 'var(--sage-dark)';
 }
 
-// ── 9. Navigation helpers ─────────────────────────────────────
+// ── 9. Navigation ─────────────────────────────────────────────
 function initNav() {
   const toggle = $('#nav-toggle');
   const nav    = $('#main-nav');
@@ -284,7 +250,6 @@ function initNav() {
     toggle.setAttribute('aria-expanded', String(open));
   });
 
-  // Close on nav link click (mobile)
   $$('#main-nav a').forEach(a => {
     a.addEventListener('click', () => {
       nav.classList.remove('open');
@@ -292,23 +257,18 @@ function initNav() {
     });
   });
 
-  // Scrolled class on header
   const header = $('#site-header');
-  const observer = new IntersectionObserver(
+  new IntersectionObserver(
     ([entry]) => header.classList.toggle('scrolled', !entry.isIntersecting),
     { threshold: 0 }
-  );
-  observer.observe($('#hero'));
+  ).observe($('#hero'));
 }
 
 // ── 10. Bootstrap ─────────────────────────────────────────────
 async function init() {
   initNav();
-
-  // Load content first (so page shows saved state before potential edit mode)
   await loadContent();
 
-  // Check URL for edit mode
   const params = new URLSearchParams(location.search);
   if (params.get('edit') === 'true') {
     const pw = prompt('Voer het wachtwoord in voor edit mode:');
@@ -319,7 +279,6 @@ async function init() {
     }
   }
 
-  // Contact form
   $('#contact-form').addEventListener('submit', handleContactSubmit);
 }
 
