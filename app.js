@@ -57,7 +57,10 @@ function rgbToHex(rgb) {
 // ── 1. Load content from Firestore ───────────────────────────
 async function loadContent() {
   try {
-    const snap = await getDoc(CONTENT_DOC);
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Firebase timeout')), 8000)
+    );
+    const snap = await Promise.race([getDoc(CONTENT_DOC), timeout]);
     if (!snap.exists()) return;
     applyContent(snap.data());
   } catch (e) {
