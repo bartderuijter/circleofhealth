@@ -14,7 +14,7 @@ import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp 
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 // ── Config ───────────────────────────────────────────────────
-const EDIT_PASSWORD = 'strandhuisje97';
+const EDIT_PASSWORD = 'circleofhealth2025';
 
 // ── Init ─────────────────────────────────────────────────────
 const app = initializeApp(FIREBASE_CONFIG);
