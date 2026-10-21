@@ -602,6 +602,8 @@ async function handleContactSubmit(e) {
         body:    JSON.stringify({
           access_key: WEB3FORMS_KEY,
           subject:    'Nieuw bericht via Circle of Health',
+          from_name:  name,
+          replyto:    email,
           name, email, message,
         }),
       });
