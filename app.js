@@ -34,14 +34,25 @@ const db  = getFirestore(app);
 const CONTENT_DOC = doc(db, 'content', 'site');
 
 // ── State ────────────────────────────────────────────────────
-let saveTimer       = null;
-let colorSaveTimer  = null;
-let activePhotoZone = null;
-let currentColors   = { ...DEFAULT_COLORS };
+let saveTimer            = null;
+let colorSaveTimer       = null;
+let elementStyleSaveTimer = null;
+let activePhotoZone      = null;
+let currentColors        = { ...DEFAULT_COLORS };
+let elementStyles        = {};   // { fieldId: { color, background, fontSize, fontFamily, bold, italic } }
+let activeEl             = null; // het element waarvoor de toolbar open is
+let activeField          = null; // data-field van dat element
 
 // ── DOM helpers ──────────────────────────────────────────────
 const $  = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+// ── Kleurconversie rgb(…) → #rrggbb ──────────────────────────
+function rgbToHex(rgb) {
+  const m = rgb.match(/\d+/g);
+  if (!m || m.length < 3) return '#000000';
+  return '#' + m.slice(0, 3).map(n => parseInt(n).toString(16).padStart(2, '0')).join('');
+}
 
 // ── 1. Load content from Firestore ───────────────────────────
 async function loadContent() {
@@ -55,26 +66,36 @@ async function loadContent() {
 }
 
 function applyContent(data) {
+  // Tekstvelden
   $$('[data-field]').forEach(el => {
     const field = el.dataset.field;
     if (!field || el.classList.contains('photo-zone')) return;
     if (data[field]) el.innerHTML = data[field];
   });
 
+  // Logo
   if (data.logoUrl) showLogoImage(data.logoUrl);
 
+  // Foto-zones
   $$('.photo-zone').forEach(zone => {
     const url = data[zone.dataset.field];
     if (url) applyPhotoToZone(zone, url);
   });
 
+  // Globale kleuren
   if (data.colors) {
     currentColors = { ...DEFAULT_COLORS, ...data.colors };
     applyColors(currentColors);
   }
+
+  // Per-element stijlen — ook zichtbaar voor gewone bezoekers
+  if (data.elementStyles) {
+    elementStyles = data.elementStyles;
+    applyAllElementStyles();
+  }
 }
 
-// ── 2. Apply colors to CSS variables ─────────────────────────
+// ── 2. Apply global colors ────────────────────────────────────
 function applyColors(colors) {
   const root = document.documentElement;
   Object.entries(colors).forEach(([key, val]) => {
@@ -82,7 +103,38 @@ function applyColors(colors) {
   });
 }
 
-// ── 3. Save text content ──────────────────────────────────────
+// ── 3. Apply per-element styles ───────────────────────────────
+function applyAllElementStyles() {
+  Object.entries(elementStyles).forEach(([field, style]) => {
+    const el = document.querySelector(`[data-field="${field}"]`);
+    if (el) applyElementStyle(el, style);
+  });
+}
+
+function applyElementStyle(el, style) {
+  if (!el || !style) return;
+  const isPhoto = el.classList.contains('photo-zone');
+  el.style.backgroundColor = style.background || '';
+  if (!isPhoto) {
+    el.style.color      = style.color      || '';
+    el.style.fontSize   = style.fontSize   || '';
+    el.style.fontFamily = style.fontFamily ? `'${style.fontFamily}', sans-serif` : '';
+    el.style.fontWeight = style.bold       ? '700'    : '';
+    el.style.fontStyle  = style.italic     ? 'italic' : '';
+  }
+}
+
+function clearElementStyle(el) {
+  if (!el) return;
+  el.style.backgroundColor = '';
+  el.style.color           = '';
+  el.style.fontSize        = '';
+  el.style.fontFamily      = '';
+  el.style.fontWeight      = '';
+  el.style.fontStyle       = '';
+}
+
+// ── 4. Save text content ──────────────────────────────────────
 function scheduleSave() {
   clearTimeout(saveTimer);
   setSaveStatus('Opslaan…');
@@ -105,7 +157,7 @@ async function saveTextContent() {
   }
 }
 
-// ── 4. Save colors ────────────────────────────────────────────
+// ── 5. Save global colors ─────────────────────────────────────
 function scheduleColorSave() {
   clearTimeout(colorSaveTimer);
   setSaveStatus('Opslaan…');
@@ -122,6 +174,23 @@ async function saveColors() {
   }
 }
 
+// ── 6. Save per-element styles ────────────────────────────────
+function scheduleElementStyleSave() {
+  clearTimeout(elementStyleSaveTimer);
+  setSaveStatus('Opslaan…');
+  elementStyleSaveTimer = setTimeout(saveElementStyles, 800);
+}
+
+async function saveElementStyles() {
+  try {
+    await setDoc(CONTENT_DOC, { elementStyles }, { merge: true });
+    setSaveStatus('Opgeslagen ✓');
+  } catch (e) {
+    setSaveStatus('Fout bij opslaan ✗');
+    console.error(e);
+  }
+}
+
 function setSaveStatus(msg) {
   const btn = $('#edit-save-btn');
   if (!btn) return;
@@ -129,10 +198,10 @@ function setSaveStatus(msg) {
   btn.classList.toggle('saving', msg === 'Opslaan…');
 }
 
-// ── 5. Image → base64 via Canvas (max 800px, JPEG 0.75) ──────
+// ── 7. Image → base64 via Canvas ─────────────────────────────
 function imageFileToBase64(file) {
   return new Promise((resolve, reject) => {
-    const img = new Image();
+    const img       = new Image();
     const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);
@@ -146,11 +215,11 @@ function imageFileToBase64(file) {
       resolve(canvas.toDataURL('image/jpeg', 0.75));
     };
     img.onerror = reject;
-    img.src = objectUrl;
+    img.src     = objectUrl;
   });
 }
 
-// ── 6. Save a single image field to Firestore ────────────────
+// ── 8. Save single image field ────────────────────────────────
 async function saveImageField(field, dataUri) {
   setSaveStatus('Afbeelding opslaan…');
   try {
@@ -162,7 +231,7 @@ async function saveImageField(field, dataUri) {
   }
 }
 
-// ── 7. Photo zone helpers ─────────────────────────────────────
+// ── 9. Photo zone helpers ─────────────────────────────────────
 function applyPhotoToZone(zone, dataUri) {
   zone.style.backgroundImage = `url('${dataUri}')`;
   zone.classList.add('has-photo');
@@ -175,10 +244,10 @@ async function handlePhotoFile(file, zone) {
   await saveImageField(zone.dataset.field, dataUri);
 }
 
-// ── 8. Logo helpers ───────────────────────────────────────────
+// ── 10. Logo helpers ──────────────────────────────────────────
 function showLogoImage(dataUri) {
-  const img   = $('#logo-img');
-  const text  = $('#logo-text');
+  const img  = $('#logo-img');
+  const text = $('#logo-text');
   img.src     = dataUri;
   img.hidden  = false;
   text.hidden = true;
@@ -191,7 +260,205 @@ async function handleLogoFile(file) {
   await saveImageField('logoUrl', dataUri);
 }
 
-// ── 9. Color panel ────────────────────────────────────────────
+// ── 11. Element-toolbar: hulpfuncties ─────────────────────────
+
+function getCurrentStyle() {
+  if (!activeField) return {};
+  if (!elementStyles[activeField]) elementStyles[activeField] = {};
+  return elementStyles[activeField];
+}
+
+function positionAndShowToolbar(el) {
+  const tb     = $('#el-toolbar');
+  const rect   = el.getBoundingClientRect();
+  const MARGIN = 8;
+  const EST_H  = 46;
+  const EST_W  = 480;
+
+  // Boven het element, tenzij te hoog
+  let top  = rect.top - EST_H - MARGIN;
+  if (top < 60) top = rect.bottom + MARGIN;
+
+  // Horizontaal: links uitlijnen op element, maar niet buiten beeld
+  let left = rect.left;
+  if (left + EST_W > window.innerWidth - MARGIN) {
+    left = window.innerWidth - EST_W - MARGIN;
+  }
+  left = Math.max(MARGIN, left);
+
+  tb.style.top  = `${top}px`;
+  tb.style.left = `${left}px`;
+  tb.hidden     = false;
+}
+
+function populateToolbar(el) {
+  const field   = el.dataset.field;
+  const style   = elementStyles[field] || {};
+  const isPhoto = el.classList.contains('photo-zone');
+  const tb      = $('#el-toolbar');
+
+  tb.classList.toggle('is-photo', isPhoto);
+  tb.classList.toggle('is-text',  !isPhoto);
+
+  // Achtergrondkleur
+  $('#et-bg').value = style.background || '#ffffff';
+
+  if (!isPhoto) {
+    // Tekstkleur: opgeslagen waarde of berekende waarde
+    if (style.color) {
+      $('#et-color').value = style.color;
+    } else {
+      const computed = getComputedStyle(el).color;
+      $('#et-color').value = rgbToHex(computed);
+    }
+    $('#et-font').value = style.fontFamily || '';
+    $('#et-bold').classList.toggle('active',   !!style.bold);
+    $('#et-italic').classList.toggle('active', !!style.italic);
+  }
+}
+
+function showToolbar(el) {
+  // Deactiveer vorig element
+  if (activeEl && activeEl !== el) activeEl.classList.remove('el-active');
+
+  activeEl    = el;
+  activeField = el.dataset.field;
+  el.classList.add('el-active');
+  populateToolbar(el);
+  positionAndShowToolbar(el);
+}
+
+function hideToolbar() {
+  if (activeEl) activeEl.classList.remove('el-active');
+  activeEl    = null;
+  activeField = null;
+  $('#el-toolbar').hidden = true;
+}
+
+// ── 12. Element-toolbar: events ───────────────────────────────
+function initElementToolbar() {
+  const tb = $('#el-toolbar');
+
+  // Klikken in de toolbar sluit 'm niet
+  tb.addEventListener('mousedown', e => e.stopPropagation());
+
+  // Tekstkleur (live preview bij slepen, opslaan bij sluiten picker)
+  $('#et-color').addEventListener('input', e => {
+    if (!activeEl || !activeField) return;
+    const s = getCurrentStyle();
+    s.color = e.target.value;
+    applyElementStyle(activeEl, s);
+  });
+  $('#et-color').addEventListener('change', scheduleElementStyleSave);
+
+  // Achtergrondkleur
+  $('#et-bg').addEventListener('input', e => {
+    if (!activeEl || !activeField) return;
+    const s = getCurrentStyle();
+    s.background = e.target.value;
+    applyElementStyle(activeEl, s);
+  });
+  $('#et-bg').addEventListener('change', scheduleElementStyleSave);
+
+  // Lettergrootte kleiner
+  $('#et-smaller').addEventListener('click', () => {
+    if (!activeEl || !activeField) return;
+    const s    = getCurrentStyle();
+    const base = s.fontSize
+      ? parseInt(s.fontSize)
+      : parseInt(getComputedStyle(activeEl).fontSize);
+    s.fontSize = `${Math.max(8, base - 2)}px`;
+    applyElementStyle(activeEl, s);
+    scheduleElementStyleSave();
+  });
+
+  // Lettergrootte groter
+  $('#et-bigger').addEventListener('click', () => {
+    if (!activeEl || !activeField) return;
+    const s    = getCurrentStyle();
+    const base = s.fontSize
+      ? parseInt(s.fontSize)
+      : parseInt(getComputedStyle(activeEl).fontSize);
+    s.fontSize = `${Math.min(120, base + 2)}px`;
+    applyElementStyle(activeEl, s);
+    scheduleElementStyleSave();
+  });
+
+  // Lettertype
+  $('#et-font').addEventListener('change', e => {
+    if (!activeEl || !activeField) return;
+    const s = getCurrentStyle();
+    s.fontFamily = e.target.value;
+    applyElementStyle(activeEl, s);
+    scheduleElementStyleSave();
+  });
+
+  // Vet
+  $('#et-bold').addEventListener('click', () => {
+    if (!activeEl || !activeField) return;
+    const s = getCurrentStyle();
+    s.bold = !s.bold;
+    $('#et-bold').classList.toggle('active', s.bold);
+    applyElementStyle(activeEl, s);
+    scheduleElementStyleSave();
+  });
+
+  // Cursief
+  $('#et-italic').addEventListener('click', () => {
+    if (!activeEl || !activeField) return;
+    const s = getCurrentStyle();
+    s.italic = !s.italic;
+    $('#et-italic').classList.toggle('active', s.italic);
+    applyElementStyle(activeEl, s);
+    scheduleElementStyleSave();
+  });
+
+  // Foto vervangen (toolbar-knop delegeert naar photo-file-input)
+  $('#et-photo-btn').addEventListener('click', () => {
+    if (activeEl && activeEl.classList.contains('photo-zone')) {
+      activePhotoZone = activeEl;
+      $('#photo-file-input').click();
+    }
+  });
+
+  // Herstel stijl van dit element
+  $('#et-reset').addEventListener('click', () => {
+    if (!activeField) return;
+    delete elementStyles[activeField];
+    clearElementStyle(activeEl);
+    scheduleElementStyleSave();
+    if (activeEl) populateToolbar(activeEl);
+  });
+
+  // Klikken buiten toolbar én buiten [data-field] sluit toolbar
+  document.addEventListener('mousedown', e => {
+    if (!activeEl) return;
+    if (e.target.closest('#el-toolbar')) return;
+    if (e.target.closest('[data-field]')) return;
+    hideToolbar();
+  });
+
+  // Escape sluit toolbar
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') hideToolbar();
+  });
+
+  // Herpositioneer bij scrollen
+  window.addEventListener('scroll', () => {
+    if (activeEl && !$('#el-toolbar').hidden) {
+      positionAndShowToolbar(activeEl);
+    }
+  }, { passive: true });
+
+  // Herpositioneer bij resize
+  window.addEventListener('resize', () => {
+    if (activeEl && !$('#el-toolbar').hidden) {
+      positionAndShowToolbar(activeEl);
+    }
+  });
+}
+
+// ── 13. Color panel (Hele site) ───────────────────────────────
 function initColorPanel() {
   const panel    = $('#color-panel');
   const openBtn  = $('#color-panel-btn');
@@ -233,39 +500,59 @@ function initColorPanel() {
   });
 }
 
-// ── 10. Edit mode ──────────────────────────────────────────────
+// ── 14. Edit mode ─────────────────────────────────────────────
 function enterEditMode() {
   document.body.classList.add('edit-mode');
   $('#edit-bar').hidden = false;
   $('#edit-fab').hidden = false;
 
+  // Tekstelementen bewerkbaar maken
   $$('.editable').forEach(el => {
     el.contentEditable = 'true';
     el.addEventListener('input', scheduleSave);
   });
 
-  $$('.photo-zone').forEach(zone => {
-    zone.addEventListener('click', () => triggerPhotoInput(zone));
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-    zone.addEventListener('drop', e => {
-      e.preventDefault();
-      zone.classList.remove('drag-over');
-      handlePhotoFile(e.dataTransfer.files[0], zone);
+  // Alle [data-field] elementen: mousedown → toolbar tonen
+  $$('[data-field]').forEach(el => {
+    el.addEventListener('mousedown', () => {
+      // Toolbar opnieuw tonen als 'm gesloten is voor hetzelfde element
+      if (el !== activeEl || $('#el-toolbar').hidden) {
+        showToolbar(el);
+      }
     });
   });
 
+  // Foto-input (gedeeld): triggered door toolbar "Foto"-knop of drag-drop
   const photoInput = $('#photo-file-input');
   photoInput.addEventListener('change', () => {
     if (activePhotoZone) handlePhotoFile(photoInput.files[0], activePhotoZone);
     photoInput.value = '';
   });
 
+  // Drag & drop op foto-zones
+  $$('.photo-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      activePhotoZone = zone;
+      handlePhotoFile(e.dataTransfer.files[0], zone);
+    });
+  });
+
+  // Logo upload
   const logoZone  = $('#logo-upload-zone');
   const logoInput = $('#logo-file-input');
   logoZone.hidden = false;
   logoZone.addEventListener('click', () => logoInput.click());
-  logoZone.addEventListener('dragover', e => { e.preventDefault(); logoZone.style.background = 'rgba(122,158,126,.15)'; });
+  logoZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    logoZone.style.background = 'rgba(122,158,126,.15)';
+  });
   logoZone.addEventListener('dragleave', () => logoZone.style.background = '');
   logoZone.addEventListener('drop', e => {
     e.preventDefault();
@@ -278,14 +565,10 @@ function enterEditMode() {
   });
 
   initColorPanel();
+  initElementToolbar();
 }
 
-function triggerPhotoInput(zone) {
-  activePhotoZone = zone;
-  $('#photo-file-input').click();
-}
-
-// ── 11. Contact form ───────────────────────────────────────────
+// ── 15. Contact form ──────────────────────────────────────────
 async function handleContactSubmit(e) {
   e.preventDefault();
   const form      = e.target;
@@ -326,7 +609,7 @@ function showFeedback(el, msg, type) {
   el.style.color = type === 'error' ? '#c0392b' : 'var(--sage-dark)';
 }
 
-// ── 12. Navigation ─────────────────────────────────────────────
+// ── 16. Navigation ────────────────────────────────────────────
 function initNav() {
   const toggle = $('#nav-toggle');
   const nav    = $('#main-nav');
@@ -350,7 +633,7 @@ function initNav() {
   ).observe($('#hero'));
 }
 
-// ── 13. Bootstrap ─────────────────────────────────────────────
+// ── 17. Bootstrap ─────────────────────────────────────────────
 async function init() {
   initNav();
   await loadContent();

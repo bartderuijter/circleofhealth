@@ -381,7 +381,7 @@ input:focus, textarea:focus {
 }
 input::placeholder, textarea::placeholder { color: #bbb; }
 
-/* Override the general input rule for color pickers */
+/* Override for color pickers */
 input[type="color"] {
   width: 36px;
   height: 26px;
@@ -412,51 +412,29 @@ input[type="color"] {
 /* ---------- Photo zones (base) ---------- */
 .photo-zone { position: relative; }
 
-/* ---------- Edit mode ---------- */
-body.edit-mode .editable {
-  outline: 2px dashed rgba(122,158,126,.5);
+/* ---------- Edit mode — hover & selection outlines ---------- */
+body.edit-mode [data-field] {
+  border-radius: 3px;
+  transition: outline-color .1s;
+}
+body.edit-mode [data-field]:hover {
+  outline: 2px solid var(--color-accent);
   outline-offset: 3px;
-  border-radius: 4px;
-  cursor: text;
-  transition: outline-color .15s;
 }
-body.edit-mode .editable:focus {
-  outline-color: var(--sage);
-  background: rgba(255,255,255,.6);
+body.edit-mode [data-field].el-active {
+  outline: 2.5px solid var(--color-accent);
+  outline-offset: 3px;
 }
-body.edit-mode .editable:hover { outline-color: var(--sage-light); }
+/* text cursor for editable text; pointer for photo zones */
+body.edit-mode .editable { cursor: text; }
+body.edit-mode .photo-zone { cursor: pointer; }
 body.edit-mode .editable:empty::before {
   content: attr(data-placeholder);
   color: #bbb;
   pointer-events: none;
 }
 
-body.edit-mode .photo-zone {
-  outline: 2px dashed rgba(122,158,126,.5);
-  outline-offset: 4px;
-  cursor: pointer;
-}
-body.edit-mode .photo-zone:hover { outline-color: var(--sage); }
-body.edit-mode .photo-zone::after {
-  content: attr(data-placeholder);
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,.55);
-  color: var(--sage-dark);
-  font-size: .85rem;
-  font-weight: 500;
-  text-align: center;
-  padding: 1rem;
-  opacity: 0;
-  transition: opacity .2s;
-}
-body.edit-mode .photo-zone:hover::after { opacity: 1; }
-body.edit-mode .photo-zone.has-photo::after { background: rgba(255,255,255,.4); }
-
-/* Edit bar */
+/* ---------- Edit bar ---------- */
 .edit-bar {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -492,7 +470,7 @@ body.edit-mode .photo-zone.has-photo::after { background: rgba(255,255,255,.4); 
 }
 .edit-save-btn.saving { color: var(--white); }
 
-/* Kleuren-knop in de edit bar */
+/* "Hele site"-knop in de edit bar */
 .color-panel-btn {
   display: flex;
   align-items: center;
@@ -524,7 +502,7 @@ body.edit-mode .photo-zone.has-photo::after { background: rgba(255,255,255,.4); 
 .edit-fab svg { width: 20px; height: 20px; }
 .edit-fab:hover { background: var(--sage-dark); transform: scale(1.05); }
 
-/* ---------- Color panel ---------- */
+/* ---------- Color panel (Hele site) ---------- */
 .color-panel {
   position: fixed;
   bottom: 54px;
@@ -588,9 +566,109 @@ body.edit-mode .photo-zone.has-photo::after { background: rgba(255,255,255,.4); 
 }
 .color-reset-btn:hover { background: var(--beige-dark); color: var(--text); }
 
+/* ---------- Element-toolbar ---------- */
+.el-toolbar {
+  position: fixed;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 8px;
+  background: var(--white);
+  border: 1px solid var(--beige-dark);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.14);
+  white-space: nowrap;
+  flex-wrap: nowrap;
+}
+
+/* Kleurpicker-labels in de toolbar */
+.el-tool {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background .12s;
+  color: var(--text-light);
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+.el-tool:hover { background: var(--beige); }
+
+/* Kleine kleurenzweet-input */
+.et-swatch {
+  width: 24px;
+  height: 18px;
+  padding: 1px 2px;
+  border: 1px solid var(--beige-dark);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Scheidslijn */
+.el-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--beige-dark);
+  margin-inline: 2px;
+  flex-shrink: 0;
+}
+
+/* Lettergrootte-groep */
+.el-size-group {
+  display: flex;
+  gap: 2px;
+}
+
+/* Toolbar-knop */
+.el-btn {
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: .75rem;
+  color: var(--text-light);
+  transition: background .12s, color .12s;
+  line-height: 1.4;
+}
+.el-btn:hover { background: var(--beige); color: var(--text); }
+.el-btn b, .el-btn i { font-size: .8rem; }
+
+/* Actieve toggle (vet / cursief) */
+.el-btn.el-toggle.active {
+  background: var(--sage-light);
+  color: var(--white);
+}
+
+/* Lettertype-select */
+.el-select {
+  padding: 3px 5px;
+  border: 1px solid var(--beige-dark);
+  border-radius: 5px;
+  font-size: .72rem;
+  color: var(--text);
+  background: var(--white);
+  cursor: pointer;
+  max-width: 130px;
+  outline: none;
+}
+.el-select:hover { border-color: var(--sage-light); }
+
+/* Herstel-knop */
+.et-reset-btn { color: var(--text-light); }
+.et-reset-btn:hover { background: #fff0f0 !important; color: #c0392b !important; }
+
+/* Toon/verberg tools op basis van elementtype */
+.el-toolbar.is-photo .text-only { display: none !important; }
+.el-toolbar.is-text  .photo-only { display: none !important; }
+
 /* ---------- Drag-over state ---------- */
 .photo-zone.drag-over {
-  outline-color: var(--sage-dark) !important;
+  outline: 2px dashed var(--sage-dark) !important;
+  outline-offset: 4px;
   background-color: rgba(122,158,126,.1) !important;
 }
 
@@ -627,4 +705,7 @@ body.edit-mode .photo-zone.has-photo::after { background: rgba(255,255,255,.4); 
   .contact-form-wrap { padding: 1.5rem; }
   .color-panel { right: .75rem; left: .75rem; width: auto; }
   .edit-bar-label span { display: none; }
+
+  /* Toolbar scrolt horizontaal op kleine schermen */
+  .el-toolbar { max-width: calc(100vw - 16px); overflow-x: auto; }
 }

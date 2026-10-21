@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Circle of Health</title>
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts — basis + extra keuzeletertypes -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;700&family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -111,7 +111,6 @@
       </p>
 
       <div class="cards">
-
         <article class="card">
           <div class="card-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 1 0 0 18A9 9 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
@@ -144,7 +143,6 @@
           </p>
           <p class="card-price editable" data-field="card3Price" data-placeholder="€ 65 p.p.">€ 65 p.p.</p>
         </article>
-
       </div>
     </div>
   </section>
@@ -213,13 +211,13 @@
     <div class="edit-bar-right">
       <button id="color-panel-btn" class="color-panel-btn" aria-expanded="false" aria-controls="color-panel">
         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
-        Kleuren
+        Hele site
       </button>
       <span id="edit-save-btn" class="edit-save-btn">Opgeslagen ✓</span>
     </div>
   </div>
 
-  <!-- Color panel (alleen zichtbaar in edit mode, na klik op Kleuren) -->
+  <!-- Kleurenpaneel voor volledige site (Hele site-knop) -->
   <div id="color-panel" class="color-panel" hidden role="dialog" aria-label="Kleuren aanpassen">
     <div class="color-panel-head">
       <span>Kleuren aanpassen</span>
@@ -240,11 +238,52 @@
     </div>
   </div>
 
+  <!-- Element-toolbar (verschijnt bij klikken op een element in edit mode) -->
+  <div id="el-toolbar" class="el-toolbar" hidden role="toolbar" aria-label="Opmaak">
+    <!-- Tekstkleur -->
+    <label class="el-tool text-only" title="Tekstkleur">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4l10.5-10.5a2.121 2.121 0 0 0-3-3L5 17v3z"/></svg>
+      <input type="color" id="et-color" class="et-swatch" title="Tekstkleur" />
+    </label>
+    <!-- Achtergrondkleur -->
+    <label class="el-tool" title="Achtergrondkleur">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      <input type="color" id="et-bg" class="et-swatch" title="Achtergrondkleur" />
+    </label>
+    <div class="el-sep text-only"></div>
+    <!-- Lettergrootte -->
+    <div class="el-size-group text-only">
+      <button id="et-smaller" class="el-btn" title="Kleiner">A−</button>
+      <button id="et-bigger"  class="el-btn" title="Groter">A+</button>
+    </div>
+    <!-- Lettertype -->
+    <select id="et-font" class="el-select text-only" title="Lettertype">
+      <option value="">Lettertype…</option>
+      <option value="Cormorant Garamond">Cormorant Garamond</option>
+      <option value="Inter">Inter</option>
+      <option value="Playfair Display">Playfair Display</option>
+      <option value="Lato">Lato</option>
+      <option value="Raleway">Raleway</option>
+      <option value="Merriweather">Merriweather</option>
+    </select>
+    <!-- Vet / Cursief -->
+    <button id="et-bold"   class="el-btn el-toggle text-only" title="Vet"><b>B</b></button>
+    <button id="et-italic" class="el-btn el-toggle text-only" title="Cursief"><i>I</i></button>
+    <!-- Foto vervangen -->
+    <div class="el-sep photo-only"></div>
+    <button id="et-photo-btn" class="el-btn photo-only" title="Foto vervangen">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Foto
+    </button>
+    <!-- Herstel -->
+    <div class="el-sep"></div>
+    <button id="et-reset" class="el-btn et-reset-btn" title="Herstel standaard">↺ Herstel</button>
+  </div>
+
   <button id="edit-fab" class="edit-fab" title="Edit mode" hidden aria-label="Edit mode">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
   </button>
 
-  <!-- Hidden file input for photo zones -->
   <input type="file" id="photo-file-input" accept="image/*" hidden />
 
   <script type="module" src="app.js"></script>
