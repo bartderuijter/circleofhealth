@@ -18,13 +18,11 @@
   <header id="site-header">
     <div class="header-inner">
 
-      <!-- Logo: toont afbeelding als die opgeslagen is, anders tekst -->
       <a href="#" class="logo" id="logo-link" aria-label="Circle of Health – naar boven">
         <img id="logo-img" src="" alt="Circle of Health logo" hidden />
         <span id="logo-text">Circle of Health</span>
       </a>
 
-      <!-- Logo upload zone (alleen zichtbaar in edit mode) -->
       <div id="logo-upload-zone" class="logo-upload-zone" hidden>
         <input type="file" id="logo-file-input" accept="image/*" hidden />
         <span class="logo-upload-hint">Klik of sleep een logo</span>
@@ -210,9 +208,36 @@
   <div id="edit-bar" class="edit-bar" hidden>
     <span class="edit-bar-label">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Edit mode actief
+      <span>Edit mode actief</span>
     </span>
-    <button id="edit-save-btn" class="edit-save-btn">Opgeslagen ✓</button>
+    <div class="edit-bar-right">
+      <button id="color-panel-btn" class="color-panel-btn" aria-expanded="false" aria-controls="color-panel">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+        Kleuren
+      </button>
+      <span id="edit-save-btn" class="edit-save-btn">Opgeslagen ✓</span>
+    </div>
+  </div>
+
+  <!-- Color panel (alleen zichtbaar in edit mode, na klik op Kleuren) -->
+  <div id="color-panel" class="color-panel" hidden role="dialog" aria-label="Kleuren aanpassen">
+    <div class="color-panel-head">
+      <span>Kleuren aanpassen</span>
+      <button id="color-panel-close" class="color-panel-close-btn" aria-label="Sluiten">✕</button>
+    </div>
+    <div class="color-panel-body">
+      <label class="color-row"><span>Paginaachtergrond</span><input type="color" data-color="page-bg" /></label>
+      <label class="color-row"><span>Hero sectie</span><input type="color" data-color="hero-bg" /></label>
+      <label class="color-row"><span>Over mij sectie</span><input type="color" data-color="over-bg" /></label>
+      <label class="color-row"><span>Diensten sectie</span><input type="color" data-color="diensten-bg" /></label>
+      <label class="color-row"><span>Contact sectie</span><input type="color" data-color="contact-bg" /></label>
+      <label class="color-row"><span>Koppen</span><input type="color" data-color="heading" /></label>
+      <label class="color-row"><span>Tekst</span><input type="color" data-color="text" /></label>
+      <label class="color-row"><span>Accentkleur</span><input type="color" data-color="accent" /></label>
+    </div>
+    <div class="color-panel-foot">
+      <button id="color-reset-btn" class="color-reset-btn">Standaardkleuren herstellen</button>
+    </div>
   </div>
 
   <button id="edit-fab" class="edit-fab" title="Edit mode" hidden aria-label="Edit mode">

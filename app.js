@@ -16,6 +16,17 @@ import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp 
 // ── Config ───────────────────────────────────────────────────
 const EDIT_PASSWORD = 'circleofhealth2025';
 
+const DEFAULT_COLORS = {
+  'page-bg':     '#faf8f4',
+  'hero-bg':     '#c5d9c1',
+  'over-bg':     '#faf8f4',
+  'diensten-bg': '#f0ebe1',
+  'contact-bg':  '#faf8f4',
+  'heading':     '#3d3530',
+  'text':        '#3d3530',
+  'accent':      '#7a9e7e',
+};
+
 // ── Init ─────────────────────────────────────────────────────
 const app = initializeApp(FIREBASE_CONFIG);
 const db  = getFirestore(app);
@@ -23,8 +34,10 @@ const db  = getFirestore(app);
 const CONTENT_DOC = doc(db, 'content', 'site');
 
 // ── State ────────────────────────────────────────────────────
-let saveTimer        = null;
-let activePhotoZone  = null;
+let saveTimer       = null;
+let colorSaveTimer  = null;
+let activePhotoZone = null;
+let currentColors   = { ...DEFAULT_COLORS };
 
 // ── DOM helpers ──────────────────────────────────────────────
 const $  = (sel, ctx = document) => ctx.querySelector(sel);
@@ -54,9 +67,22 @@ function applyContent(data) {
     const url = data[zone.dataset.field];
     if (url) applyPhotoToZone(zone, url);
   });
+
+  if (data.colors) {
+    currentColors = { ...DEFAULT_COLORS, ...data.colors };
+    applyColors(currentColors);
+  }
 }
 
-// ── 2. Save text content ──────────────────────────────────────
+// ── 2. Apply colors to CSS variables ─────────────────────────
+function applyColors(colors) {
+  const root = document.documentElement;
+  Object.entries(colors).forEach(([key, val]) => {
+    root.style.setProperty(`--color-${key}`, val);
+  });
+}
+
+// ── 3. Save text content ──────────────────────────────────────
 function scheduleSave() {
   clearTimeout(saveTimer);
   setSaveStatus('Opslaan…');
@@ -79,6 +105,23 @@ async function saveTextContent() {
   }
 }
 
+// ── 4. Save colors ────────────────────────────────────────────
+function scheduleColorSave() {
+  clearTimeout(colorSaveTimer);
+  setSaveStatus('Opslaan…');
+  colorSaveTimer = setTimeout(saveColors, 800);
+}
+
+async function saveColors() {
+  try {
+    await setDoc(CONTENT_DOC, { colors: currentColors }, { merge: true });
+    setSaveStatus('Opgeslagen ✓');
+  } catch (e) {
+    setSaveStatus('Fout bij opslaan ✗');
+    console.error(e);
+  }
+}
+
 function setSaveStatus(msg) {
   const btn = $('#edit-save-btn');
   if (!btn) return;
@@ -86,7 +129,7 @@ function setSaveStatus(msg) {
   btn.classList.toggle('saving', msg === 'Opslaan…');
 }
 
-// ── 3. Image → base64 via Canvas (max 800px, JPEG 0.75) ──────
+// ── 5. Image → base64 via Canvas (max 800px, JPEG 0.75) ──────
 function imageFileToBase64(file) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -107,7 +150,7 @@ function imageFileToBase64(file) {
   });
 }
 
-// ── 4. Save a single image field to Firestore ────────────────
+// ── 6. Save a single image field to Firestore ────────────────
 async function saveImageField(field, dataUri) {
   setSaveStatus('Afbeelding opslaan…');
   try {
@@ -119,7 +162,7 @@ async function saveImageField(field, dataUri) {
   }
 }
 
-// ── 5. Photo zone helpers ─────────────────────────────────────
+// ── 7. Photo zone helpers ─────────────────────────────────────
 function applyPhotoToZone(zone, dataUri) {
   zone.style.backgroundImage = `url('${dataUri}')`;
   zone.classList.add('has-photo');
@@ -132,7 +175,7 @@ async function handlePhotoFile(file, zone) {
   await saveImageField(zone.dataset.field, dataUri);
 }
 
-// ── 6. Logo helpers ───────────────────────────────────────────
+// ── 8. Logo helpers ───────────────────────────────────────────
 function showLogoImage(dataUri) {
   const img   = $('#logo-img');
   const text  = $('#logo-text');
@@ -148,7 +191,49 @@ async function handleLogoFile(file) {
   await saveImageField('logoUrl', dataUri);
 }
 
-// ── 7. Edit mode ──────────────────────────────────────────────
+// ── 9. Color panel ────────────────────────────────────────────
+function initColorPanel() {
+  const panel    = $('#color-panel');
+  const openBtn  = $('#color-panel-btn');
+  const closeBtn = $('#color-panel-close');
+  const resetBtn = $('#color-reset-btn');
+
+  function syncInputs() {
+    $$('[data-color]', panel).forEach(input => {
+      input.value = currentColors[input.dataset.color] ?? DEFAULT_COLORS[input.dataset.color];
+    });
+  }
+
+  openBtn.addEventListener('click', () => {
+    const opening = panel.hidden;
+    panel.hidden  = !opening;
+    openBtn.setAttribute('aria-expanded', String(opening));
+    if (opening) syncInputs();
+  });
+
+  closeBtn.addEventListener('click', () => {
+    panel.hidden = true;
+    openBtn.setAttribute('aria-expanded', 'false');
+  });
+
+  $$('[data-color]', panel).forEach(input => {
+    input.addEventListener('input', () => {
+      const key = input.dataset.color;
+      currentColors[key] = input.value;
+      document.documentElement.style.setProperty(`--color-${key}`, input.value);
+      scheduleColorSave();
+    });
+  });
+
+  resetBtn.addEventListener('click', () => {
+    currentColors = { ...DEFAULT_COLORS };
+    applyColors(currentColors);
+    syncInputs();
+    scheduleColorSave();
+  });
+}
+
+// ── 10. Edit mode ──────────────────────────────────────────────
 function enterEditMode() {
   document.body.classList.add('edit-mode');
   $('#edit-bar').hidden = false;
@@ -176,7 +261,6 @@ function enterEditMode() {
     photoInput.value = '';
   });
 
-  // Logo upload zone
   const logoZone  = $('#logo-upload-zone');
   const logoInput = $('#logo-file-input');
   logoZone.hidden = false;
@@ -192,6 +276,8 @@ function enterEditMode() {
     handleLogoFile(logoInput.files[0]);
     logoInput.value = '';
   });
+
+  initColorPanel();
 }
 
 function triggerPhotoInput(zone) {
@@ -199,7 +285,7 @@ function triggerPhotoInput(zone) {
   $('#photo-file-input').click();
 }
 
-// ── 8. Contact form ───────────────────────────────────────────
+// ── 11. Contact form ───────────────────────────────────────────
 async function handleContactSubmit(e) {
   e.preventDefault();
   const form      = e.target;
@@ -240,7 +326,7 @@ function showFeedback(el, msg, type) {
   el.style.color = type === 'error' ? '#c0392b' : 'var(--sage-dark)';
 }
 
-// ── 9. Navigation ─────────────────────────────────────────────
+// ── 12. Navigation ─────────────────────────────────────────────
 function initNav() {
   const toggle = $('#nav-toggle');
   const nav    = $('#main-nav');
@@ -264,7 +350,7 @@ function initNav() {
   ).observe($('#hero'));
 }
 
-// ── 10. Bootstrap ─────────────────────────────────────────────
+// ── 13. Bootstrap ─────────────────────────────────────────────
 async function init() {
   initNav();
   await loadContent();
