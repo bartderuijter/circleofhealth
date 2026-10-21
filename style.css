@@ -412,6 +412,9 @@ input[type="color"] {
 /* ---------- Photo zones (base) ---------- */
 .photo-zone { position: relative; }
 
+/* ---------- Edit mode — shift header down below edit bar ---------- */
+body.edit-mode #site-header { top: 44px; }
+
 /* ---------- Edit mode — hover & selection outlines ---------- */
 body.edit-mode [data-field] {
   border-radius: 3px;
@@ -437,7 +440,7 @@ body.edit-mode .editable:empty::before {
 /* ---------- Edit bar ---------- */
 .edit-bar {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
+  top: 0; left: 0; right: 0;
   height: 44px;
   background: var(--sage-dark);
   color: var(--white);
