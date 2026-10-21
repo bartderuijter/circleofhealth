@@ -17,7 +17,7 @@ import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp 
 const EDIT_PASSWORD = 'circleofhealth2025';
 
 // Web3Forms access key — haal op via https://web3forms.com (voer je e-mailadres in)
-const WEB3FORMS_KEY = '16d962e4-0356-44f4-b817-f5d7718f8971';
+const WEB3FORMS_KEY = '2933d4fe-824d-40e2-9c59-6bc1bb752a8c';
 
 const DEFAULT_COLORS = {
   'page-bg':     '#faf8f4',
