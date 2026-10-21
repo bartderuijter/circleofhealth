@@ -16,6 +16,9 @@ import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp 
 // ── Config ───────────────────────────────────────────────────
 const EDIT_PASSWORD = 'circleofhealth2025';
 
+// Web3Forms access key — haal op via https://web3forms.com (voer je e-mailadres in)
+const WEB3FORMS_KEY = '';
+
 const DEFAULT_COLORS = {
   'page-bg':     '#faf8f4',
   'hero-bg':     '#c5d9c1',
@@ -591,10 +594,26 @@ async function handleContactSubmit(e) {
   submitBtn.textContent = 'Versturen…';
 
   try {
-    await addDoc(collection(db, 'messages'), {
-      name, email, message,
-      createdAt: serverTimestamp()
-    });
+    if (WEB3FORMS_KEY) {
+      // Stuur e-mail via Web3Forms
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body:    JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject:    'Nieuw bericht via Circle of Health',
+          name, email, message,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Web3Forms error');
+    } else {
+      // Fallback: sla op in Firestore als er nog geen Web3Forms key is
+      await addDoc(collection(db, 'messages'), {
+        name, email, message,
+        createdAt: serverTimestamp(),
+      });
+    }
     showFeedback(feedback, 'Bedankt, je bericht is verstuurd!', 'success');
     form.reset();
   } catch (err) {
