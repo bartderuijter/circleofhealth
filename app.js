@@ -604,6 +604,7 @@ async function handleContactSubmit(e) {
           subject:    'Nieuw bericht via Circle of Health',
           from_name:  name,
           replyto:    email,
+          to:         'moniek@circleofhealth.nl',
           name, email, message,
         }),
       });
