@@ -124,38 +124,50 @@
 
   <!-- ===================== OVER MIJ ===================== -->
   <section id="over" class="section section-over">
-    <div class="container two-col">
+    <div class="container about-grid">
 
-      <div class="photo-col">
+      <div class="about-visual reveal">
+        <span class="deco-ring" aria-hidden="true"></span>
+        <span class="deco-dot" aria-hidden="true"></span>
         <div
-          class="portrait-wrap photo-zone"
+          class="about-photo photo-zone has-photo"
           id="about-photo"
           data-field="aboutPhoto"
           data-placeholder="Klik om een portretfoto toe te voegen"
-          role="img"
-          aria-label="Portretfoto"
-        ></div>
+        ><img src="images/about.jpg" alt="Moniek van Circle of Health" width="800" height="1000" loading="lazy" decoding="async" />
+          <svg class="photo-fallback" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+            <rect width="400" height="500" fill="#e3ead9" />
+            <circle cx="250" cy="190" r="92" fill="#e9b79a" opacity=".85" />
+            <path d="M0 380C100 330 230 360 400 320V500H0Z" fill="#c3d0b8" />
+            <path d="M0 440C130 400 270 450 400 410V500H0Z" fill="#93a988" />
+          </svg>
+        </div>
       </div>
 
-      <div class="text-col">
-        <p class="section-label editable" data-field="aboutLabel" data-placeholder="Over mij">Over mij</p>
-        <h2 class="editable" data-field="aboutTitle" data-placeholder="Hallo, ik ben [naam]">Hallo, ik ben [naam]</h2>
+      <div class="about-text reveal">
+        <p class="section-label editable" data-field="aboutLabel" data-placeholder="Kopje">Over mij</p>
+        <h2 class="editable" data-field="aboutTitle" data-placeholder="Titel">Hallo, ik ben Moniek</h2>
         <div class="rich-text">
-          <p class="editable" data-field="aboutP1" data-placeholder="Schrijf hier een korte introductie over jezelf. Wie ben je en wat drijft je als coach?">
-            Schrijf hier een korte introductie over jezelf. Wie ben je en wat drijft je als coach?
-          </p>
-          <p class="editable" data-field="aboutP2" data-placeholder="Vertel iets over je achtergrond, opleiding of persoonlijke reis richting gezondheid.">
-            Vertel iets over je achtergrond, opleiding of persoonlijke reis richting gezondheid.
-          </p>
-          <p class="editable" data-field="aboutP3" data-placeholder="Wat maakt jouw aanpak uniek? Hoe begeleid je je klanten?">
-            Wat maakt jouw aanpak uniek? Hoe begeleid je je klanten?
-          </p>
+          <p class="lead editable" data-field="aboutP1" data-placeholder="Korte introductie over jezelf">Wat ooit begon met de wens om mijn jonge kinderen gezonder te voeden, is uitgegroeid tot mijn levenswerk. Inmiddels begeleid ik mensen die zoeken naar meer balans, energie en vitaliteit — niet via strenge regels, maar door samen te ontdekken wat jouw lichaam écht nodig heeft.</p>
+          <p class="editable" data-field="aboutP2" data-placeholder="Je achtergrond en opleiding">Twaalf jaar geleden volgde ik mijn eerste cursus kindervoedingscoach, gewoon omdat ik beter wilde weten wat ik mijn kinderen voorzette. Al snel werd duidelijk dat hier mijn passie lag. Mijn vier kinderen, nu 9, 11, 13 en 15, zijn opgegroeid met bewust eten en plukken daar dagelijks de vruchten van. In de jaren daarna heb ik vele opleidingen gevolgd en ben ik afgestudeerd als orthomoleculair voedingsspecialiste.</p>
+          <p class="editable" data-field="aboutP3" data-placeholder="Je aanpak">Mijn werk is intussen verder gegroeid: tegenwoordig zie ik mezelf vooral als holistisch lifestyle adviseur. Ik help cliënten om van uiteenlopende klachten af te komen, waarbij ik naar het hele plaatje kijk — voeding, supplementen, leefstijl én de invloed die emoties en bewustzijn op je gezondheid hebben. Daarnaast werk ik met de EMB-test, een hulpmiddel waarmee ik op een diepere laag in kaart kan brengen wat jouw lichaam op dit moment nodig heeft.</p>
         </div>
-        <div class="badge-row">
-          <span class="badge editable" data-field="badge1" data-placeholder="Gecertificeerd voedingscoach">Gecertificeerd voedingscoach</span>
-          <span class="badge editable" data-field="badge2" data-placeholder="Health coach">Health coach</span>
-          <span class="badge editable" data-field="badge3" data-placeholder="10+ jaar ervaring">10+ jaar ervaring</span>
+
+        <blockquote class="about-quote">
+          <p class="editable" data-field="aboutQuote" data-placeholder="Een uitspraak die bij je past">Niet via strenge regels, maar door samen te ontdekken wat jouw lichaam écht nodig heeft.</p>
+        </blockquote>
+
+        <div class="certs">
+          <h3 class="certs-title editable" data-field="certsTitle" data-placeholder="Kopje certificeringen">Opleidingen en certificeringen</h3>
+          <ul class="cert-list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8 7.5 9.5 4.4-1.500 7.5-4.900 7.500-9.500V6z"/><path d="m9 12 2.200 2.200L15.200 10"/></svg><span class="editable" data-field="cert1" data-placeholder="Opleiding of certificering">Orthomoleculair voedingsspecialist</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8 7.5 9.5 4.4-1.500 7.5-4.900 7.500-9.500V6z"/><path d="m9 12 2.200 2.200L15.200 10"/></svg><span class="editable" data-field="cert2" data-placeholder="Opleiding of certificering">Kindervoedingscoach</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8 7.5 9.5 4.4-1.500 7.5-4.900 7.500-9.500V6z"/><path d="m9 12 2.200 2.200L15.200 10"/></svg><span class="editable" data-field="cert3" data-placeholder="Opleiding of certificering">Werkt met de EMB-test</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8 7.5 9.5 4.4-1.500 7.5-4.900 7.500-9.500V6z"/><path d="m9 12 2.200 2.200L15.200 10"/></svg><span class="editable" data-field="cert4" data-placeholder="Opleiding of certificering"></span></li>
+          </ul>
         </div>
+
+        <a href="#contact" class="btn"><span class="editable" data-field="aboutCta" data-placeholder="Knoptekst">Maak kennis met mij</span></a>
       </div>
     </div>
   </section>
