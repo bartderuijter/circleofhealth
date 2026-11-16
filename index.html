@@ -35,6 +35,7 @@
           <li><a href="#over" class="editable" data-field="navOver">Over mij</a></li>
           <li><a href="#diensten" class="editable" data-field="navDiensten">Diensten</a></li>
           <li><a href="#werkwijze" class="editable" data-field="navWerkwijze">Werkwijze</a></li>
+          <li class="nav-reviews"><a href="#ervaringen" class="editable" data-field="navErvaringen">Ervaringen</a></li>
           <li><a href="#contact" class="editable" data-field="navContact">Contact</a></li>
         </ul>
         <a href="#contact" class="btn btn-small nav-cta"><span class="editable" data-field="navCta">Gratis kennismaking</span></a>
@@ -278,6 +279,42 @@
     </div>
   </section>
 
+  <!-- ===================== ERVARINGEN ===================== -->
+  <!-- Zichtbaar voor bezoekers zodra er minstens één review is ingevuld -->
+  <section id="ervaringen" class="section section-ervaringen">
+    <div class="container">
+      <header class="section-head reveal">
+        <p class="section-label editable" data-field="reviewsLabel" data-placeholder="Kopje">Ervaringen</p>
+        <h2 class="editable" data-field="reviewsTitle" data-placeholder="Titel">Wat klanten zeggen</h2>
+        <p class="edit-note">Vul hier echte reviews in. Een lege review is onzichtbaar voor bezoekers. Zolang alle drie leeg zijn, zien bezoekers deze sectie en het menu-item niet.</p>
+      </header>
+
+      <div class="reviews">
+        <figure class="review reveal">
+          <blockquote><p class="review-text editable" data-field="review1Text" data-placeholder="Typ hier wat de klant schreef"></p></blockquote>
+          <figcaption>
+            <span class="review-name editable" data-field="review1Name" data-placeholder="Naam van de klant"></span>
+            <span class="review-detail editable" data-field="review1Detail" data-placeholder="Bijvoorbeeld: persoonlijk traject, 2026"></span>
+          </figcaption>
+        </figure>
+        <figure class="review reveal">
+          <blockquote><p class="review-text editable" data-field="review2Text" data-placeholder="Typ hier wat de klant schreef"></p></blockquote>
+          <figcaption>
+            <span class="review-name editable" data-field="review2Name" data-placeholder="Naam van de klant"></span>
+            <span class="review-detail editable" data-field="review2Detail" data-placeholder="Bijvoorbeeld: persoonlijk traject, 2026"></span>
+          </figcaption>
+        </figure>
+        <figure class="review reveal">
+          <blockquote><p class="review-text editable" data-field="review3Text" data-placeholder="Typ hier wat de klant schreef"></p></blockquote>
+          <figcaption>
+            <span class="review-name editable" data-field="review3Name" data-placeholder="Naam van de klant"></span>
+            <span class="review-detail editable" data-field="review3Detail" data-placeholder="Bijvoorbeeld: persoonlijk traject, 2026"></span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
   <!-- ===================== CONTACT ===================== -->
   <section id="contact" class="section section-contact">
     <div class="container two-col contact-cols">
@@ -362,6 +399,7 @@
       <label class="color-row"><span>Over mij sectie</span><input type="color" data-color="over-bg" /></label>
       <label class="color-row"><span>Diensten sectie</span><input type="color" data-color="diensten-bg" /></label>
       <label class="color-row"><span>Werkwijze sectie</span><input type="color" data-color="werkwijze-bg" /></label>
+      <label class="color-row"><span>Ervaringen sectie</span><input type="color" data-color="ervaringen-bg" /></label>
       <label class="color-row"><span>Contact sectie</span><input type="color" data-color="contact-bg" /></label>
       <label class="color-row"><span>Koppen</span><input type="color" data-color="heading" /></label>
       <label class="color-row"><span>Tekst</span><input type="color" data-color="text" /></label>

@@ -22,6 +22,7 @@ const DEFAULT_COLORS = {
   'over-bg':     '#fbf8f3',
   'diensten-bg': '#f3ece0',
   'werkwijze-bg': '#fbf8f3',
+  'ervaringen-bg': '#f3ece0',
   'contact-bg':  '#fbf8f3',
   'heading':     '#2e2823',
   'text':        '#453d36',

@@ -26,6 +26,7 @@
   --color-over-bg:     #fbf8f3;
   --color-diensten-bg: #f3ece0;
   --color-werkwijze-bg: #fbf8f3;
+  --color-ervaringen-bg: #f3ece0;
   --color-contact-bg:  #fbf8f3;
   --color-heading:     #2e2823;
   --color-text:        #453d36;
@@ -791,6 +792,72 @@ body.edit-mode .photo-tools { display: flex !important; }
     border-left: 0;
     border-top: 1.5px dashed color-mix(in srgb, var(--color-accent) 45%, transparent);
   }
+}
+
+/* ---------- Ervaringen ---------- */
+.section-ervaringen { background: var(--color-ervaringen-bg); }
+.reviews {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: clamp(2.25rem, 6vw, 3.5rem);
+}
+.review {
+  position: relative;
+  flex: 1 1 300px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border-radius: 22px;
+  padding: 3.4rem 1.75rem 1.75rem;
+  box-shadow: var(--shadow);
+}
+.review::before {
+  content: '\201C';
+  position: absolute;
+  left: 1.5rem; top: .7rem;
+  font-family: var(--font-head);
+  font-size: 6.5rem;
+  line-height: 1;
+  color: var(--clay);
+  opacity: .55;
+}
+.review-text {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--color-heading);
+}
+.review figcaption {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  padding-top: 1.4rem;
+  line-height: 1.4;
+}
+.review-name { font-weight: 600; color: var(--color-heading); }
+.review-detail { font-size: .9rem; color: var(--text-light); }
+
+.edit-note { display: none; }
+body.edit-mode .edit-note {
+  display: block;
+  margin-top: 1rem;
+  padding: .7rem 1rem;
+  border: 1.5px dashed var(--sage-light);
+  border-radius: 12px;
+  font-size: .875rem;
+  color: var(--sage-dark);
+}
+
+/* Voor bezoekers: lege reviews, en zonder reviews de hele sectie, verbergen */
+body:not(.edit-mode) .review:not(:has(.review-text:not(:empty):not(.is-empty))),
+body:not(.edit-mode) .section-ervaringen:not(:has(.review-text:not(:empty):not(.is-empty))),
+body:not(.edit-mode):not(:has(.review-text:not(:empty):not(.is-empty))) .nav-reviews { display: none !important; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .reviews .reveal:nth-child(2) { transition-delay: .1s; }
+  .js .reviews .reveal:nth-child(3) { transition-delay: .2s; }
 }
 
 /* ---------- Contact ---------- */
