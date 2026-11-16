@@ -23,6 +23,7 @@ const DEFAULT_COLORS = {
   'diensten-bg': '#f3ece0',
   'werkwijze-bg': '#fbf8f3',
   'ervaringen-bg': '#f3ece0',
+  'faq-bg':      '#fbf8f3',
   'contact-bg':  '#fbf8f3',
   'heading':     '#2e2823',
   'text':        '#453d36',
@@ -600,6 +601,14 @@ function enterEditMode() {
   document.body.classList.add('edit-mode');
   $('#edit-bar').hidden = false;
   markEmptyFields();
+
+  // Uitklapvragen: tijdens het bewerken altijd open, zodat je erin kunt typen
+  $$('details').forEach(d => {
+    d.open = true;
+    const summary = d.querySelector('summary');
+    summary.addEventListener('click', e => e.preventDefault());
+    summary.addEventListener('keyup', e => { if (e.key === ' ') e.preventDefault(); });
+  });
 
   // Links met bewerkbare tekst volgen we niet tijdens het bewerken
   document.addEventListener('click', e => {
