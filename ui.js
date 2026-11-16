@@ -16,6 +16,7 @@
   const nav    = $('#main-nav');
   const header = $('#site-header');
 
+  if (toggle && nav) {
   function setOpen(open) {
     nav.classList.toggle('open', open);
     toggle.setAttribute('aria-expanded', String(open));
@@ -30,6 +31,7 @@
   const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 8);
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+  }
 
   // ── Rustig in beeld komen bij scrollen ──────────────────────
   const revealEls = $$('.reveal');
@@ -56,6 +58,34 @@
     if ([...topic.options].some(o => o.value === current)) topic.value = current;
   }
   buildTopics();
+
+  // Veelgestelde vragen ook als gestructureerde gegevens voor zoekmachines
+  function buildFaqData() {
+    const items = $$('.faq-item').map(item => ({
+      q: $('.faq-q', item).textContent.trim(),
+      a: $('.faq-a', item).textContent.trim(),
+    })).filter(f => f.q && f.a);
+    let tag = $('#faq-data');
+    if (!items.length) return tag && tag.remove();
+    if (!tag) {
+      tag = document.createElement('script');
+      tag.type = 'application/ld+json';
+      tag.id = 'faq-data';
+      document.head.appendChild(tag);
+    }
+    tag.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: items.map(f => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    });
+  }
+  buildFaqData();
+  document.addEventListener('coh:content', () => { buildTopics(); buildFaqData(); });
+
   if (topic) ['pointerdown', 'focus'].forEach(type => topic.addEventListener(type, buildTopics));
 
   $$('[data-topic-from]').forEach(btn => btn.addEventListener('click', () => {

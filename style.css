@@ -29,6 +29,7 @@
   --color-ervaringen-bg: #f3ece0;
   --color-faq-bg:      #fbf8f3;
   --color-contact-bg:  #f3ece0;
+  --color-footer-bg:   #3f543b;
   --color-heading:     #2e2823;
   --color-text:        #453d36;
   --color-accent:      #55704f;
@@ -1051,12 +1052,93 @@ input[type="file"] { min-height: 0; }
 
 /* ---------- Footer ---------- */
 .site-footer {
-  background: var(--beige-dark);
-  text-align: center;
-  padding: 1.75rem 1rem;
-  font-size: .8rem;
-  color: var(--text-light);
+  background: var(--color-footer-bg);
+  color: rgba(255,255,255,.86);
+  padding-top: clamp(3rem, 7vw, 4.5rem);
+  font-size: 1rem;
 }
+.footer-grid {
+  display: grid;
+  gap: 2.5rem;
+  padding-bottom: clamp(2.5rem, 6vw, 3.5rem);
+}
+.footer-logo { color: var(--white); margin-bottom: .9rem; }
+.footer-logo img { filter: brightness(0) invert(1); }
+.footer-brand p { max-width: 22em; }
+.footer-nav ul { display: grid; gap: .15rem; }
+.footer-nav a,
+.footer-link {
+  display: inline-block;
+  padding: .4rem 0;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: color .2s, text-decoration-color .2s;
+}
+.footer-nav a:hover,
+.footer-link:hover { color: var(--white); text-decoration-color: currentColor; }
+.footer-heading {
+  font-size: .8125rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+.social-list { display: flex; gap: .75rem; }
+.social {
+  display: grid;
+  place-items: center;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.4);
+  color: var(--white);
+  transition: background .2s, color .2s, border-color .2s;
+}
+.social svg { width: 22px; height: 22px; }
+.social:hover { background: var(--white); border-color: var(--white); color: var(--sage-dark); }
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem 2rem;
+  padding-block: 1.25rem;
+  border-top: 1px solid rgba(255,255,255,.18);
+  font-size: .9rem;
+}
+.site-footer > .footer-bottom:first-child { border-top: 0; }
+.site-footer:has(> .footer-bottom:first-child) { padding-top: .75rem; }
+.site-footer :focus-visible { outline-color: var(--white); }
+body.edit-mode .site-footer .edit-note { color: var(--white); border-color: rgba(255,255,255,.5); max-width: 22em; }
+
+/* Social media zonder link: onzichtbaar voor bezoekers, gestippeld in edit mode */
+body:not(.edit-mode) .social:not([href]),
+body:not(.edit-mode) li:has(> .social:not([href])),
+body:not(.edit-mode) .footer-social:not(:has(.social[href])) { display: none !important; }
+body.edit-mode .social { cursor: pointer; }
+body.edit-mode .social:not([href]) { border-style: dashed; opacity: .7; }
+
+@media (min-width: 760px) {
+  .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; gap: 3rem; }
+}
+
+/* ---------- Tekstpagina (privacyverklaring) ---------- */
+.page-header {
+  border-bottom: 1px solid var(--beige-dark);
+  background: var(--color-page-bg);
+}
+.page-header .header-inner { height: var(--header-h); }
+.prose {
+  max-width: 720px;
+  padding-block: clamp(2.5rem, 7vw, 5rem);
+}
+.prose h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); margin-bottom: 1rem; }
+.prose h2 { font-size: clamp(1.5rem, 4vw, 1.9rem); margin: 2.5rem 0 .6rem; }
+.prose p + p { margin-top: 1rem; }
+.prose ul { list-style: disc; padding-left: 1.3rem; margin-top: .75rem; display: grid; gap: .4rem; }
+.prose a { color: var(--color-accent); font-weight: 500; text-decoration: underline; text-underline-offset: 4px; }
+.prose .updated { color: var(--text-light); font-size: .9375rem; }
 
 /* ---------- Photo zones (base) ---------- */
 .photo-zone { position: relative; }

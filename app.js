@@ -25,6 +25,7 @@ const DEFAULT_COLORS = {
   'ervaringen-bg': '#f3ece0',
   'faq-bg':      '#fbf8f3',
   'contact-bg':  '#f3ece0',
+  'footer-bg':   '#3f543b',
   'heading':     '#2e2823',
   'text':        '#453d36',
   'accent':      '#55704f',
@@ -55,6 +56,80 @@ const LEGACY_TEXT = {
 const LEGACY_LOGO = { length: 14471, hash: 3667750639 };
 
 const CACHE_KEY   = 'coh-content-v2';
+
+// De bedieningselementen van edit mode: pas toegevoegd als je inlogt
+const EDIT_UI_HTML = `
+  <div id="edit-bar" class="edit-bar">
+    <span class="edit-bar-label">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <span>Edit mode actief</span>
+    </span>
+    <div class="edit-bar-right">
+      <button id="color-panel-btn" class="color-panel-btn" aria-expanded="false" aria-controls="color-panel">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+        Hele site
+      </button>
+      <span id="edit-save-btn" class="edit-save-btn">Opgeslagen ✓</span>
+    </div>
+  </div>
+  <div id="color-panel" class="color-panel" hidden role="dialog" aria-label="Kleuren aanpassen">
+    <div class="color-panel-head">
+      <span>Kleuren aanpassen</span>
+      <button id="color-panel-close" class="color-panel-close-btn" aria-label="Sluiten">✕</button>
+    </div>
+    <div class="color-panel-body">
+      <label class="color-row"><span>Paginaachtergrond</span><input type="color" data-color="page-bg" /></label>
+      <label class="color-row"><span>Hero sectie</span><input type="color" data-color="hero-bg" /></label>
+      <label class="color-row"><span>Over mij sectie</span><input type="color" data-color="over-bg" /></label>
+      <label class="color-row"><span>Diensten sectie</span><input type="color" data-color="diensten-bg" /></label>
+      <label class="color-row"><span>Werkwijze sectie</span><input type="color" data-color="werkwijze-bg" /></label>
+      <label class="color-row"><span>Ervaringen sectie</span><input type="color" data-color="ervaringen-bg" /></label>
+      <label class="color-row"><span>Vragen sectie</span><input type="color" data-color="faq-bg" /></label>
+      <label class="color-row"><span>Contact sectie</span><input type="color" data-color="contact-bg" /></label>
+      <label class="color-row"><span>Footer</span><input type="color" data-color="footer-bg" /></label>
+      <label class="color-row"><span>Koppen</span><input type="color" data-color="heading" /></label>
+      <label class="color-row"><span>Tekst</span><input type="color" data-color="text" /></label>
+      <label class="color-row"><span>Accentkleur</span><input type="color" data-color="accent" /></label>
+    </div>
+    <div class="color-panel-foot">
+      <button id="color-reset-btn" class="color-reset-btn">Standaardkleuren herstellen</button>
+    </div>
+  </div>
+  <div id="el-toolbar" class="el-toolbar" hidden role="toolbar" aria-label="Opmaak">
+    <label class="el-tool text-only" title="Tekstkleur">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4l10.5-10.5a2.121 2.121 0 0 0-3-3L5 17v3z"/></svg>
+      <input type="color" id="et-color" class="et-swatch" title="Tekstkleur" />
+    </label>
+    <label class="el-tool" title="Achtergrondkleur">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      <input type="color" id="et-bg" class="et-swatch" title="Achtergrondkleur" />
+    </label>
+    <div class="el-sep text-only"></div>
+    <div class="el-size-group text-only">
+      <button id="et-smaller" class="el-btn" title="Kleiner">A−</button>
+      <button id="et-bigger"  class="el-btn" title="Groter">A+</button>
+    </div>
+    <select id="et-font" class="el-select text-only" title="Lettertype">
+      <option value="">Lettertype…</option>
+      <option value="Cormorant Garamond">Cormorant Garamond</option>
+      <option value="Inter">Inter</option>
+      <option value="Playfair Display">Playfair Display</option>
+      <option value="Lato">Lato</option>
+      <option value="Raleway">Raleway</option>
+      <option value="Merriweather">Merriweather</option>
+    </select>
+    <button id="et-bold"   class="el-btn el-toggle text-only" title="Vet"><b>B</b></button>
+    <button id="et-italic" class="el-btn el-toggle text-only" title="Cursief"><i>I</i></button>
+    <div class="el-sep photo-only"></div>
+    <button id="et-photo-btn" class="el-btn photo-only" title="Foto vervangen">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Foto
+    </button>
+    <div class="el-sep"></div>
+    <button id="et-reset" class="el-btn et-reset-btn" title="Herstel standaard">↺ Herstel</button>
+  </div>
+  <input type="file" id="photo-file-input" accept="image/*" hidden />
+`;
 const EXTRA_FONTS = {
   'Playfair Display': 'Playfair+Display:ital,wght@0,400;0,700;1,400',
   'Lato':             'Lato:ital,wght@0,300;0,400;0,700;1,400',
@@ -123,6 +198,12 @@ function applyContent(data) {
   });
   markEmptyFields();
 
+  // Links (social media)
+  $$('[data-url]').forEach(link => {
+    const url = data[link.dataset.url];
+    if (typeof url === 'string') applyUrl(link, url);
+  });
+
   // Logo
   if (data.logoUrl && !isLegacyLogo(data.logoUrl)) showLogoImage(data.logoUrl);
 
@@ -148,6 +229,11 @@ function applyContent(data) {
   }
 }
 
+function applyUrl(link, url) {
+  if (/^https?:\/\//i.test(url)) link.href = url;
+  else link.removeAttribute('href');
+}
+
 function isLegacyLogo(uri) {
   if (uri.length !== LEGACY_LOGO.length) return false;
   let h = 5381;
@@ -165,6 +251,7 @@ function markEmptyFields() {
     el.classList.toggle('is-empty', isBlank(el));
   });
   syncLinks();
+  document.dispatchEvent(new Event('coh:content'));
 }
 
 // E-mail- en telefoonlinks volgen de tekst die erin staat
@@ -357,6 +444,7 @@ async function handlePhotoFile(file, zone) {
 // ── 10. Logo helpers ──────────────────────────────────────────
 function showLogoImage(dataUri) {
   const img = $('#logo-img');
+  if (!img) return;
   if (img.getAttribute('src') !== dataUri) img.src = dataUri;
   img.hidden = false;
 }
@@ -612,7 +700,7 @@ function initColorPanel() {
 // ── 14. Edit mode ─────────────────────────────────────────────
 function enterEditMode() {
   document.body.classList.add('edit-mode');
-  $('#edit-bar').hidden = false;
+  document.body.insertAdjacentHTML('beforeend', EDIT_UI_HTML);
   markEmptyFields();
 
   // Uitklapvragen: tijdens het bewerken altijd open, zodat je erin kunt typen
@@ -682,8 +770,13 @@ function enterEditMode() {
   });
 
   // Logo upload
+  initSocialLinks();
+  initColorPanel();
+  initElementToolbar();
+
   const logoZone  = $('#logo-upload-zone');
   const logoInput = $('#logo-file-input');
+  if (!logoZone) return;
   logoZone.hidden = false;
   logoZone.addEventListener('click', () => logoInput.click());
   logoZone.addEventListener('dragover', e => {
@@ -700,9 +793,25 @@ function enterEditMode() {
     handleLogoFile(logoInput.files[0]);
     logoInput.value = '';
   });
+}
 
-  initColorPanel();
-  initElementToolbar();
+// Social media: klik in edit mode op een icoon om de link te wijzigen
+function initSocialLinks() {
+  $$('[data-url]').forEach(link => link.addEventListener('click', async e => {
+    e.preventDefault();
+    const url = prompt(`Link naar ${link.dataset.urlLabel} (leeg laten = icoon verbergen):`, link.getAttribute('href') || 'https://');
+    if (url === null) return;
+    const clean = /^https?:\/\/.+/i.test(url.trim()) ? url.trim() : '';
+    applyUrl(link, clean);
+    setSaveStatus('Opslaan…');
+    try {
+      await setDoc(CONTENT_DOC, { [link.dataset.url]: clean }, { merge: true });
+      setSaveStatus('Opgeslagen ✓');
+    } catch (err) {
+      setSaveStatus('Fout bij opslaan ✗');
+      console.error(err);
+    }
+  }));
 }
 
 // ── 17. Bootstrap ─────────────────────────────────────────────
