@@ -43,6 +43,7 @@ const LEGACY_TEXT = {
   heroEyebrow: 'Health &amp; Voedingscoach',
   heroTitle:   'Voed je lichaam,<br>voed je ziel.',
   heroSub:     'Samen op weg naar een gezond en evenwichtig leven.',
+  servicesIntro: 'Iedere reis begint met één stap. Kies de begeleiding die bij jou past.',
 };
 
 // Het oude logo (JPEG met lichte achtergrond) is vervangen door een

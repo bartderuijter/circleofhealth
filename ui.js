@@ -46,6 +46,14 @@
     revealEls.forEach(el => el.classList.add('in'));
   }
 
+  // ── Knop bij een dienst: onderwerp alvast invullen ──────────
+  $$('[data-topic-from]').forEach(btn => btn.addEventListener('click', () => {
+    if (editing()) return;
+    const topic = $('#cf-topic');
+    const title = $(`[data-field="${btn.dataset.topicFrom}"]`);
+    if (topic && title) topic.value = title.textContent.trim();
+  }));
+
   // ── Contactformulier (e-mail via Web3Forms) ─────────────────
   const form = $('#contact-form');
   if (form) form.addEventListener('submit', async e => {

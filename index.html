@@ -175,44 +175,65 @@
   <!-- ===================== DIENSTEN ===================== -->
   <section id="diensten" class="section section-diensten">
     <div class="container">
-      <p class="section-label centered editable" data-field="servicesLabel" data-placeholder="Diensten">Diensten</p>
-      <h2 class="centered editable" data-field="servicesTitle" data-placeholder="Wat ik voor je kan betekenen">Wat ik voor je kan betekenen</h2>
-      <p class="section-intro centered editable" data-field="servicesIntro" data-placeholder="Iedere reis begint met één stap. Kies de begeleiding die bij jou past.">
-        Iedere reis begint met één stap. Kies de begeleiding die bij jou past.
-      </p>
+      <header class="section-head reveal">
+        <p class="section-label editable" data-field="servicesLabel" data-placeholder="Kopje">Diensten</p>
+        <h2 class="editable" data-field="servicesTitle" data-placeholder="Titel">Wat ik voor je kan betekenen</h2>
+        <p class="section-intro editable" data-field="servicesIntro" data-placeholder="Korte inleiding">Kies wat bij je past. Twijfel je? Dan beginnen we met een gratis kennismaking.</p>
+      </header>
 
       <div class="cards">
-        <article class="card">
-          <div class="card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 1 0 0 18A9 9 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+        <article class="card reveal">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.800 7L4 20l1.100-4.600A8 8 0 1 1 21 12z"/><path d="M9 11h6M9 14h4"/></svg>
           </div>
-          <h3 class="editable" data-field="card1Title" data-placeholder="Kennismakingsgesprek">Kennismakingsgesprek</h3>
-          <p class="editable" data-field="card1Text" data-placeholder="Een vrijblijvend gesprek van 30 minuten om te ontdekken of we een goede match zijn en wat jij nodig hebt.">
-            Een vrijblijvend gesprek van 30 minuten om te ontdekken of we een goede match zijn en wat jij nodig hebt.
-          </p>
-          <p class="card-price editable" data-field="card1Price" data-placeholder="Gratis">Gratis</p>
+          <h3 class="editable" data-field="card1Title" data-placeholder="Naam van de dienst">Kennismakingsgesprek</h3>
+          <p class="card-text editable" data-field="card1Text" data-placeholder="Korte uitleg">Een vrijblijvend gesprek van 30 minuten om te ontdekken of we een goede match zijn en wat jij nodig hebt.</p>
+          <ul class="card-points">
+            <li><span class="editable" data-field="card1Point1" data-placeholder="Wat je krijgt">30 minuten</span></li>
+            <li><span class="editable" data-field="card1Point2" data-placeholder="Wat je krijgt">Gratis en vrijblijvend</span></li>
+            <li><span class="editable" data-field="card1Point3" data-placeholder="Wat je krijgt">Je hoort meteen wat ik voor je kan doen</span></li>
+            <li><span class="editable" data-field="card1Point4" data-placeholder="Wat je krijgt"></span></li>
+          </ul>
+          <div class="card-foot">
+            <p class="card-price editable" data-field="card1Price" data-placeholder="Prijs"></p>
+            <a href="#contact" class="btn btn-full" data-topic-from="card1Title"><span class="editable" data-field="card1Cta" data-placeholder="Knoptekst">Plan een kennismaking</span></a>
+          </div>
         </article>
 
-        <article class="card card-featured">
-          <div class="card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        <article class="card card-featured reveal">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-9"/><path d="M12 12c0-4 2.500-7 7-7 0 4.500-2.500 7-7 7z"/><path d="M12 15c0-3-2-5-6-5 0 3.500 2 5 6 5z"/></svg>
           </div>
-          <h3 class="editable" data-field="card2Title" data-placeholder="Persoonlijk traject">Persoonlijk traject</h3>
-          <p class="editable" data-field="card2Text" data-placeholder="Een intensief 3-maands coachingtraject op maat: voedings- en leefstijlplan, wekelijkse check-ins en onbeperkte support via e-mail.">
-            Een intensief 3-maands coachingtraject op maat: voedings- en leefstijlplan, wekelijkse check-ins en onbeperkte support via e-mail.
-          </p>
-          <p class="card-price editable" data-field="card2Price" data-placeholder="Vanaf € 395">Vanaf € 395</p>
+          <h3 class="editable" data-field="card2Title" data-placeholder="Naam van de dienst">Persoonlijk traject</h3>
+          <p class="card-text editable" data-field="card2Text" data-placeholder="Korte uitleg">Een intensief 3-maands coaching traject op maat: EMB-test, voedings- en leefstijlplan en support via app, telefoon of e-mail.</p>
+          <ul class="card-points">
+            <li><span class="editable" data-field="card2Point1" data-placeholder="Wat je krijgt">EMB-test</span></li>
+            <li><span class="editable" data-field="card2Point2" data-placeholder="Wat je krijgt">Voedings- en leefstijlplan op maat</span></li>
+            <li><span class="editable" data-field="card2Point3" data-placeholder="Wat je krijgt">Drie maanden begeleiding</span></li>
+            <li><span class="editable" data-field="card2Point4" data-placeholder="Wat je krijgt">Vragen stellen via app, telefoon of e-mail</span></li>
+          </ul>
+          <div class="card-foot">
+            <p class="card-price editable" data-field="card2Price" data-placeholder="Prijs">Vanaf € 999,-</p>
+            <a href="#contact" class="btn btn-full" data-topic-from="card2Title"><span class="editable" data-field="card2Cta" data-placeholder="Knoptekst">Vraag het traject aan</span></a>
+          </div>
         </article>
 
-        <article class="card">
-          <div class="card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <article class="card reveal">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.500C6.500 4.500 9.500 4.700 12 6.500c2.500-1.800 5.500-2 8-1V18c-2.500-1-5.500-.800-8 1-2.500-1.800-5.500-2-8-1z"/><path d="M12 6.500V19"/></svg>
           </div>
-          <h3 class="editable" data-field="card3Title" data-placeholder="Workshop voeding">Workshop voeding</h3>
-          <p class="editable" data-field="card3Text" data-placeholder="Een interactieve groepsworkshop over bewust eten, maaltijdplanning en de verbinding tussen voeding en welzijn.">
-            Een interactieve groepsworkshop over bewust eten, maaltijdplanning en de verbinding tussen voeding en welzijn.
-          </p>
-          <p class="card-price editable" data-field="card3Price" data-placeholder="€ 65 p.p.">€ 65 p.p.</p>
+          <h3 class="editable" data-field="card3Title" data-placeholder="Naam van de dienst">Workshop voeding</h3>
+          <p class="card-text editable" data-field="card3Text" data-placeholder="Korte uitleg">Een interactieve workshop over bewust eten en de verbinding tussen voeding en welzijn.</p>
+          <ul class="card-points">
+            <li><span class="editable" data-field="card3Point1" data-placeholder="Wat je krijgt">Bewust eten</span></li>
+            <li><span class="editable" data-field="card3Point2" data-placeholder="Wat je krijgt">Voeding en welzijn</span></li>
+            <li><span class="editable" data-field="card3Point3" data-placeholder="Wat je krijgt"></span></li>
+            <li><span class="editable" data-field="card3Point4" data-placeholder="Wat je krijgt"></span></li>
+          </ul>
+          <div class="card-foot">
+            <p class="card-price editable" data-field="card3Price" data-placeholder="Prijs">TBD 2027</p>
+            <a href="#contact" class="btn btn-full" data-topic-from="card3Title"><span class="editable" data-field="card3Cta" data-placeholder="Knoptekst">Meld je aan</span></a>
+          </div>
         </article>
       </div>
     </div>
