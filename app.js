@@ -18,7 +18,7 @@ const EDIT_PASSWORD = 'circleofhealth2025';
 
 const DEFAULT_COLORS = {
   'page-bg':     '#fbf8f3',
-  'hero-bg':     '#f3ece0',
+  'hero-bg':     '#faf5ec',
   'over-bg':     '#fbf8f3',
   'diensten-bg': '#f3ece0',
   'contact-bg':  '#fbf8f3',
@@ -44,6 +44,10 @@ const LEGACY_TEXT = {
   heroTitle:   'Voed je lichaam,<br>voed je ziel.',
   heroSub:     'Samen op weg naar een gezond en evenwichtig leven.',
 };
+
+// Het oude logo (JPEG met lichte achtergrond) is vervangen door een
+// transparante versie in images/logo.png; de opgeslagen kopie slaan we over.
+const LEGACY_LOGO = { length: 14471, hash: 3667750639 };
 
 const CACHE_KEY   = 'coh-content-v2';
 const EXTRA_FONTS = {
@@ -115,7 +119,7 @@ function applyContent(data) {
   markEmptyFields();
 
   // Logo
-  if (data.logoUrl) showLogoImage(data.logoUrl);
+  if (data.logoUrl && !isLegacyLogo(data.logoUrl)) showLogoImage(data.logoUrl);
 
   // Foto-zones
   $$('.photo-zone').forEach(zone => {
@@ -137,6 +141,13 @@ function applyContent(data) {
     elementStyles = data.elementStyles;
     applyAllElementStyles();
   }
+}
+
+function isLegacyLogo(uri) {
+  if (uri.length !== LEGACY_LOGO.length) return false;
+  let h = 5381;
+  for (let i = 0; i < uri.length; i++) h = ((h * 33) ^ uri.charCodeAt(i)) >>> 0;
+  return h === LEGACY_LOGO.hash;
 }
 
 // Lege velden markeren: verborgen voor bezoekers, placeholder in edit mode
@@ -266,7 +277,7 @@ function setSaveStatus(msg) {
 }
 
 // ── 7. Image → base64 via Canvas ─────────────────────────────
-function imageFileToBase64(file, maxWidth = 800) {
+function imageFileToBase64(file, maxWidth = 800, keepTransparency = false) {
   return new Promise((resolve, reject) => {
     const img       = new Image();
     const objectUrl = URL.createObjectURL(file);
@@ -279,7 +290,8 @@ function imageFileToBase64(file, maxWidth = 800) {
       canvas.width  = w;
       canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.75));
+      if (keepTransparency && file.type === 'image/png') return resolve(canvas.toDataURL('image/png'));
+      resolve(canvas.toDataURL('image/jpeg', maxWidth > 1000 ? 0.7 : 0.75));
     };
     img.onerror = reject;
     img.src     = objectUrl;
@@ -310,6 +322,14 @@ function applyPhotoToZone(zone, dataUri) {
   zone.classList.add('has-photo');
 }
 
+async function clearPhoto(zone) {
+  const img = zone.querySelector(':scope > img');
+  if (img) { img.removeAttribute('src'); img.hidden = true; }
+  zone.style.backgroundImage = '';
+  zone.classList.remove('has-photo');
+  await saveImageField(zone.dataset.field, '');
+}
+
 async function handlePhotoFile(file, zone) {
   if (!file || !file.type.startsWith('image/')) return;
   const dataUri = await imageFileToBase64(file, Number(zone.dataset.maxWidth) || 800);
@@ -326,7 +346,7 @@ function showLogoImage(dataUri) {
 
 async function handleLogoFile(file) {
   if (!file || !file.type.startsWith('image/')) return;
-  const dataUri = await imageFileToBase64(file, 400);
+  const dataUri = await imageFileToBase64(file, 320, true);
   showLogoImage(dataUri);
   await saveImageField('logoUrl', dataUri);
 }
@@ -610,6 +630,15 @@ function enterEditMode() {
     if (activePhotoZone) handlePhotoFile(photoInput.files[0], activePhotoZone);
     photoInput.value = '';
   });
+
+  // Losse knoppen voor foto's waar je niet op kunt klikken (achtergrond)
+  $$('[data-photo-for]').forEach(btn => btn.addEventListener('click', () => {
+    activePhotoZone = $(`[data-field="${btn.dataset.photoFor}"]`);
+    photoInput.click();
+  }));
+  $$('[data-photo-remove]').forEach(btn => btn.addEventListener('click', () => {
+    clearPhoto($(`[data-field="${btn.dataset.photoRemove}"]`));
+  }));
 
   // Drag & drop op foto-zones
   $$('.photo-zone').forEach(zone => {
