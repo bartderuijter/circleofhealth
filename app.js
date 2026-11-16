@@ -10,14 +10,11 @@ import FIREBASE_CONFIG from './firebase-config.js';
 // ── Firebase SDK ─────────────────────────────────────────────
 import { initializeApp }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp }
+import { getFirestore, doc, getDoc, setDoc }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-lite.js';
 
 // ── Config ───────────────────────────────────────────────────
 const EDIT_PASSWORD = 'circleofhealth2025';
-
-// Web3Forms access key — haal op via https://web3forms.com (voer je e-mailadres in)
-const WEB3FORMS_KEY = '2933d4fe-824d-40e2-9c59-6bc1bb752a8c';
 
 const DEFAULT_COLORS = {
   'page-bg':     '#fbf8f3',
@@ -653,95 +650,8 @@ function enterEditMode() {
   initElementToolbar();
 }
 
-// ── 15. Contact form ──────────────────────────────────────────
-async function handleContactSubmit(e) {
-  e.preventDefault();
-  const form      = e.target;
-  const feedback  = $('#cf-feedback');
-  const submitBtn = $('#cf-submit');
-
-  const name    = form.name.value.trim();
-  const email   = form.email.value.trim();
-  const message = form.message.value.trim();
-
-  if (!name || !email || !message) {
-    showFeedback(feedback, 'Vul alle velden in.', 'error');
-    return;
-  }
-
-  submitBtn.disabled    = true;
-  submitBtn.textContent = 'Versturen…';
-
-  try {
-    if (WEB3FORMS_KEY) {
-      // Stuur e-mail via Web3Forms
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body:    JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject:    'Nieuw bericht via Circle of Health',
-          from_name:  name,
-          replyto:    email,
-          to:         'moniek@circleofhealth.nl',
-          name, email, message,
-        }),
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Web3Forms error');
-    } else {
-      // Fallback: sla op in Firestore als er nog geen Web3Forms key is
-      await addDoc(collection(db, 'messages'), {
-        name, email, message,
-        createdAt: serverTimestamp(),
-      });
-    }
-    showFeedback(feedback, 'Bedankt, je bericht is verstuurd!', 'success');
-    form.reset();
-  } catch (err) {
-    showFeedback(feedback, 'Er ging iets mis. Probeer het later opnieuw.', 'error');
-    console.error(err);
-  } finally {
-    submitBtn.disabled    = false;
-    submitBtn.textContent = 'Verstuur bericht';
-  }
-}
-
-function showFeedback(el, msg, type) {
-  el.textContent = msg;
-  el.hidden      = false;
-  el.style.color = type === 'error' ? '#c0392b' : 'var(--sage-dark)';
-}
-
-// ── 16. Navigation ────────────────────────────────────────────
-function initNav() {
-  const toggle = $('#nav-toggle');
-  const nav    = $('#main-nav');
-
-  function setOpen(open) {
-    nav.classList.toggle('open', open);
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
-  }
-
-  toggle.addEventListener('click', () => setOpen(!nav.classList.contains('open')));
-  $$('#main-nav a').forEach(a => a.addEventListener('click', () => {
-    if (!document.body.classList.contains('edit-mode')) setOpen(false);
-  }));
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && nav.classList.contains('open')) { setOpen(false); toggle.focus(); }
-  });
-
-  const header = $('#site-header');
-  new IntersectionObserver(
-    ([entry]) => header.classList.toggle('scrolled', !entry.isIntersecting),
-    { threshold: .9 }
-  ).observe($('#hero'));
-}
-
 // ── 17. Bootstrap ─────────────────────────────────────────────
 async function init() {
-  initNav();
   await loadContent();
 
   const params = new URLSearchParams(location.search);
@@ -760,7 +670,6 @@ async function init() {
     }
   }
 
-  $('#contact-form').addEventListener('submit', handleContactSubmit);
 }
 
 init();
