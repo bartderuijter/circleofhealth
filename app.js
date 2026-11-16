@@ -1,6 +1,6 @@
 // ============================================================
 //  Circle of Health — app.js
-//  Vanilla JS + Firebase Firestore (geen Storage)
+//  Vanilla JS + Firebase Firestore Lite (geen Storage)
 //  Foto's worden client-side gecomprimeerd en als base64
 //  data-URI opgeslagen in Firestore.
 // ============================================================
@@ -11,7 +11,7 @@ import FIREBASE_CONFIG from './firebase-config.js';
 import { initializeApp }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp }
-  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-lite.js';
 
 // ── Config ───────────────────────────────────────────────────
 const EDIT_PASSWORD = 'circleofhealth2025';
@@ -20,6 +20,19 @@ const EDIT_PASSWORD = 'circleofhealth2025';
 const WEB3FORMS_KEY = '2933d4fe-824d-40e2-9c59-6bc1bb752a8c';
 
 const DEFAULT_COLORS = {
+  'page-bg':     '#fbf8f3',
+  'hero-bg':     '#f3ece0',
+  'over-bg':     '#fbf8f3',
+  'diensten-bg': '#f3ece0',
+  'contact-bg':  '#fbf8f3',
+  'heading':     '#2e2823',
+  'text':        '#453d36',
+  'accent':      '#55704f',
+};
+
+// Standaardwaarden van het vorige ontwerp. Staat zo'n waarde nog ongewijzigd
+// in Firestore, dan is die nooit bewust gekozen en geldt de nieuwe standaard.
+const LEGACY_COLORS = {
   'page-bg':     '#faf8f4',
   'hero-bg':     '#c5d9c1',
   'over-bg':     '#faf8f4',
@@ -28,6 +41,19 @@ const DEFAULT_COLORS = {
   'heading':     '#3d3530',
   'text':        '#3d3530',
   'accent':      '#7a9e7e',
+};
+const LEGACY_TEXT = {
+  heroEyebrow: 'Health &amp; Voedingscoach',
+  heroTitle:   'Voed je lichaam,<br>voed je ziel.',
+  heroSub:     'Samen op weg naar een gezond en evenwichtig leven.',
+};
+
+const CACHE_KEY   = 'coh-content-v2';
+const EXTRA_FONTS = {
+  'Playfair Display': 'Playfair+Display:ital,wght@0,400;0,700;1,400',
+  'Lato':             'Lato:ital,wght@0,300;0,400;0,700;1,400',
+  'Raleway':          'Raleway:ital,wght@0,300;0,400;0,500;0,700;1,400',
+  'Merriweather':     'Merriweather:ital,wght@0,300;0,400;0,700;1,400',
 };
 
 // ── Init ─────────────────────────────────────────────────────
@@ -59,13 +85,21 @@ function rgbToHex(rgb) {
 
 // ── 1. Load content from Firestore ───────────────────────────
 async function loadContent() {
+  // Eerst de laatst bekende inhoud tonen (direct), daarna verversen
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (cached) applyContent(cached);
+  } catch { /* geen cache beschikbaar */ }
+
   try {
     const timeout = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('Firebase timeout')), 8000)
     );
     const snap = await Promise.race([getDoc(CONTENT_DOC), timeout]);
     if (!snap.exists()) return;
-    applyContent(snap.data());
+    const data = snap.data();
+    applyContent(data);
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch { /* vol of geblokkeerd */ }
   } catch (e) {
     console.warn('Could not load Firestore content:', e.message);
   }
@@ -76,8 +110,12 @@ function applyContent(data) {
   $$('[data-field]').forEach(el => {
     const field = el.dataset.field;
     if (!field || el.classList.contains('photo-zone')) return;
-    if (data[field]) el.innerHTML = data[field];
+    const value = data[field];
+    if (typeof value !== 'string') return;
+    if (LEGACY_TEXT[field] === value.trim()) return;
+    if (el.innerHTML !== value) el.innerHTML = value;
   });
+  markEmptyFields();
 
   // Logo
   if (data.logoUrl) showLogoImage(data.logoUrl);
@@ -90,7 +128,10 @@ function applyContent(data) {
 
   // Globale kleuren
   if (data.colors) {
-    currentColors = { ...DEFAULT_COLORS, ...data.colors };
+    const custom = Object.fromEntries(
+      Object.entries(data.colors).filter(([key, val]) => LEGACY_COLORS[key] !== val)
+    );
+    currentColors = { ...DEFAULT_COLORS, ...custom };
     applyColors(currentColors);
   }
 
@@ -99,6 +140,28 @@ function applyContent(data) {
     elementStyles = data.elementStyles;
     applyAllElementStyles();
   }
+}
+
+// Lege velden markeren: verborgen voor bezoekers, placeholder in edit mode
+function isBlank(el) {
+  return el.textContent.trim() === '' && !el.querySelector('img');
+}
+function markEmptyFields() {
+  $$('[data-field]').forEach(el => {
+    if (el.classList.contains('photo-zone')) return;
+    el.classList.toggle('is-empty', isBlank(el));
+  });
+}
+
+// Extra lettertypes pas laden als ze gebruikt worden
+const loadedFonts = new Set();
+function ensureFont(name) {
+  if (!EXTRA_FONTS[name] || loadedFonts.has(name)) return;
+  loadedFonts.add(name);
+  const link = document.createElement('link');
+  link.rel  = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${EXTRA_FONTS[name]}&display=swap`;
+  document.head.appendChild(link);
 }
 
 // ── 2. Apply global colors ────────────────────────────────────
@@ -124,6 +187,7 @@ function applyElementStyle(el, style) {
   if (!isPhoto) {
     el.style.color      = style.color      || '';
     el.style.fontSize   = style.fontSize   || '';
+    if (style.fontFamily) ensureFont(style.fontFamily);
     el.style.fontFamily = style.fontFamily ? `'${style.fontFamily}', sans-serif` : '';
     el.style.fontWeight = style.bold       ? '700'    : '';
     el.style.fontStyle  = style.italic     ? 'italic' : '';
@@ -152,7 +216,7 @@ async function saveTextContent() {
   $$('[data-field]').forEach(el => {
     const field = el.dataset.field;
     if (!field || el.classList.contains('photo-zone')) return;
-    payload[field] = el.innerHTML.trim();
+    payload[field] = isBlank(el) ? '' : el.innerHTML.trim();
   });
   try {
     await setDoc(CONTENT_DOC, payload, { merge: true });
@@ -205,13 +269,13 @@ function setSaveStatus(msg) {
 }
 
 // ── 7. Image → base64 via Canvas ─────────────────────────────
-function imageFileToBase64(file) {
+function imageFileToBase64(file, maxWidth = 800) {
   return new Promise((resolve, reject) => {
     const img       = new Image();
     const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);
-      const scale  = Math.min(1, 800 / img.naturalWidth);
+      const scale  = Math.min(1, maxWidth / img.naturalWidth);
       const w      = Math.round(img.naturalWidth  * scale);
       const h      = Math.round(img.naturalHeight * scale);
       const canvas = document.createElement('canvas');
@@ -239,29 +303,33 @@ async function saveImageField(field, dataUri) {
 
 // ── 9. Photo zone helpers ─────────────────────────────────────
 function applyPhotoToZone(zone, dataUri) {
-  zone.style.backgroundImage = `url('${dataUri}')`;
+  const img = zone.querySelector(':scope > img');
+  if (img) {
+    if (img.getAttribute('src') !== dataUri) img.src = dataUri;
+    img.hidden = false;
+  } else {
+    zone.style.backgroundImage = `url('${dataUri}')`;
+  }
   zone.classList.add('has-photo');
 }
 
 async function handlePhotoFile(file, zone) {
   if (!file || !file.type.startsWith('image/')) return;
-  const dataUri = await imageFileToBase64(file);
+  const dataUri = await imageFileToBase64(file, Number(zone.dataset.maxWidth) || 800);
   applyPhotoToZone(zone, dataUri);
   await saveImageField(zone.dataset.field, dataUri);
 }
 
 // ── 10. Logo helpers ──────────────────────────────────────────
 function showLogoImage(dataUri) {
-  const img  = $('#logo-img');
-  const text = $('#logo-text');
-  img.src     = dataUri;
-  img.hidden  = false;
-  text.hidden = true;
+  const img = $('#logo-img');
+  if (img.getAttribute('src') !== dataUri) img.src = dataUri;
+  img.hidden = false;
 }
 
 async function handleLogoFile(file) {
   if (!file || !file.type.startsWith('image/')) return;
-  const dataUri = await imageFileToBase64(file);
+  const dataUri = await imageFileToBase64(file, 400);
   showLogoImage(dataUri);
   await saveImageField('logoUrl', dataUri);
 }
@@ -283,7 +351,8 @@ function positionAndShowToolbar(el) {
 
   // Boven het element, tenzij te hoog
   let top  = rect.top - EST_H - MARGIN;
-  if (top < 60) top = rect.bottom + MARGIN;
+  if (top < 130) top = rect.bottom + MARGIN;
+  if (top > window.innerHeight - EST_H - MARGIN) top = window.innerHeight - EST_H - MARGIN;
 
   // Horizontaal: links uitlijnen op element, maar niet buiten beeld
   let left = rect.left;
@@ -510,12 +579,22 @@ function initColorPanel() {
 function enterEditMode() {
   document.body.classList.add('edit-mode');
   $('#edit-bar').hidden = false;
-  $('#edit-fab').hidden = false;
+  markEmptyFields();
+
+  // Links met bewerkbare tekst volgen we niet tijdens het bewerken
+  document.addEventListener('click', e => {
+    const link = e.target.closest('a');
+    if (link && (link.matches('[data-field]') || link.querySelector('[data-field]'))) e.preventDefault();
+  });
 
   // Tekstelementen bewerkbaar maken
   $$('.editable').forEach(el => {
     el.contentEditable = 'true';
-    el.addEventListener('input', scheduleSave);
+    el.addEventListener('input', () => {
+      if (isBlank(el)) el.innerHTML = '';
+      el.classList.toggle('is-empty', isBlank(el));
+      scheduleSave();
+    });
   });
 
   // Alle [data-field] elementen: mousedown → toolbar tonen
@@ -639,22 +718,24 @@ function initNav() {
   const toggle = $('#nav-toggle');
   const nav    = $('#main-nav');
 
-  toggle.addEventListener('click', () => {
-    const open = nav.classList.toggle('open');
+  function setOpen(open) {
+    nav.classList.toggle('open', open);
     toggle.setAttribute('aria-expanded', String(open));
-  });
+    toggle.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+  }
 
-  $$('#main-nav a').forEach(a => {
-    a.addEventListener('click', () => {
-      nav.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    });
+  toggle.addEventListener('click', () => setOpen(!nav.classList.contains('open')));
+  $$('#main-nav a').forEach(a => a.addEventListener('click', () => {
+    if (!document.body.classList.contains('edit-mode')) setOpen(false);
+  }));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && nav.classList.contains('open')) { setOpen(false); toggle.focus(); }
   });
 
   const header = $('#site-header');
   new IntersectionObserver(
     ([entry]) => header.classList.toggle('scrolled', !entry.isIntersecting),
-    { threshold: 0 }
+    { threshold: .9 }
   ).observe($('#hero'));
 }
 
