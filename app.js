@@ -24,7 +24,7 @@ const DEFAULT_COLORS = {
   'werkwijze-bg': '#fbf8f3',
   'ervaringen-bg': '#f3ece0',
   'faq-bg':      '#fbf8f3',
-  'contact-bg':  '#fbf8f3',
+  'contact-bg':  '#f3ece0',
   'heading':     '#2e2823',
   'text':        '#453d36',
   'accent':      '#55704f',
@@ -47,6 +47,7 @@ const LEGACY_TEXT = {
   heroTitle:   'Voed je lichaam,<br>voed je ziel.',
   heroSub:     'Samen op weg naar een gezond en evenwichtig leven.',
   servicesIntro: 'Iedere reis begint met één stap. Kies de begeleiding die bij jou past.',
+  contactIntro: 'Heb je een vraag of wil je meer weten over mijn aanbod? Stuur me een bericht en ik neem zo snel mogelijk contact met je op.',
 };
 
 // Het oude logo (JPEG met lichte achtergrond) is vervangen door een
@@ -162,6 +163,18 @@ function markEmptyFields() {
   $$('[data-field]').forEach(el => {
     if (el.classList.contains('photo-zone')) return;
     el.classList.toggle('is-empty', isBlank(el));
+  });
+  syncLinks();
+}
+
+// E-mail- en telefoonlinks volgen de tekst die erin staat
+function syncLinks() {
+  $$('[data-link]').forEach(el => {
+    const text = el.textContent.trim();
+    if (!text) return el.removeAttribute('href');
+    el.href = el.dataset.link === 'tel'
+      ? 'tel:' + text.replace(/[^\d+]/g, '')
+      : 'mailto:' + text;
   });
 }
 
@@ -622,6 +635,7 @@ function enterEditMode() {
     el.addEventListener('input', () => {
       if (isBlank(el)) el.innerHTML = '';
       el.classList.toggle('is-empty', isBlank(el));
+      syncLinks();
       scheduleSave();
     });
   });

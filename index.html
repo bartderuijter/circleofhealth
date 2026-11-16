@@ -39,7 +39,7 @@
           <li><a href="#vragen" class="editable" data-field="navVragen">Vragen</a></li>
           <li><a href="#contact" class="editable" data-field="navContact">Contact</a></li>
         </ul>
-        <a href="#contact" class="btn btn-small nav-cta"><span class="editable" data-field="navCta">Gratis kennismaking</span></a>
+        <a href="#contact" class="btn btn-small nav-cta" data-topic-from="card1Title"><span class="editable" data-field="navCta">Gratis kennismaking</span></a>
       </nav>
 
       <button class="nav-toggle" id="nav-toggle" aria-label="Menu openen" aria-expanded="false" aria-controls="main-nav">
@@ -101,7 +101,7 @@
         <h1 class="editable" data-field="heroTitle" data-placeholder="Titel">Ontdek wat jouw lichaam <em>écht</em> nodig heeft.</h1>
         <p class="hero-sub editable" data-field="heroSub" data-placeholder="Korte belofte">Persoonlijke begeleiding in voeding en leefstijl voor meer energie, balans en vitaliteit. Met aandacht voor het hele plaatje.</p>
         <div class="hero-actions">
-          <a href="#contact" class="btn"><span class="editable" data-field="heroCta" data-placeholder="Knoptekst">Plan een gratis kennismaking</span></a>
+          <a href="#contact" class="btn" data-topic-from="card1Title"><span class="editable" data-field="heroCta" data-placeholder="Knoptekst">Plan een gratis kennismaking</span></a>
           <a href="#diensten" class="btn btn-ghost"><span class="editable" data-field="heroCta2" data-placeholder="Tweede knop">Bekijk de diensten</span></a>
         </div>
         <ul class="hero-points">
@@ -170,7 +170,7 @@
           </ul>
         </div>
 
-        <a href="#contact" class="btn"><span class="editable" data-field="aboutCta" data-placeholder="Knoptekst">Maak kennis met mij</span></a>
+        <a href="#contact" class="btn" data-topic-from="card1Title"><span class="editable" data-field="aboutCta" data-placeholder="Knoptekst">Maak kennis met mij</span></a>
       </div>
     </div>
   </section>
@@ -275,7 +275,7 @@
       </ol>
 
       <p class="section-cta reveal">
-        <a href="#contact" class="btn"><span class="editable" data-field="stepsCta" data-placeholder="Knoptekst">Plan een gratis kennismaking</span></a>
+        <a href="#contact" class="btn" data-topic-from="card1Title"><span class="editable" data-field="stepsCta" data-placeholder="Knoptekst">Plan een gratis kennismaking</span></a>
       </p>
     </div>
   </section>
@@ -357,46 +357,62 @@
 
   <!-- ===================== CONTACT ===================== -->
   <section id="contact" class="section section-contact">
-    <div class="container two-col contact-cols">
+    <div class="container contact-grid">
 
-      <div class="contact-info">
-        <p class="section-label editable" data-field="contactLabel" data-placeholder="Contact">Contact</p>
-        <h2 class="editable" data-field="contactTitle" data-placeholder="Laten we kennismaken">Laten we kennismaken</h2>
-        <p class="editable" data-field="contactIntro" data-placeholder="Heb je een vraag of wil je meer weten over mijn aanbod? Stuur me een bericht en ik neem zo snel mogelijk contact met je op.">
-          Heb je een vraag of wil je meer weten over mijn aanbod? Stuur me een bericht en ik neem zo snel mogelijk contact met je op.
+      <div class="contact-info reveal">
+        <p class="section-label editable" data-field="contactLabel" data-placeholder="Kopje">Contact</p>
+        <h2 class="editable" data-field="contactTitle" data-placeholder="Titel">Laten we kennismaken</h2>
+        <p class="contact-intro editable" data-field="contactIntro" data-placeholder="Korte inleiding">Heb je een vraag of wil je een kennismaking plannen? Stuur me een bericht.</p>
+
+        <p class="response-time">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span class="editable" data-field="contactResponse" data-placeholder="Reactietijd">Ik reageer meestal binnen twee werkdagen.</span>
         </p>
+
         <ul class="contact-details">
           <li>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <span class="editable" data-field="contactEmail" data-placeholder="info@circleofhealth.nl">info@circleofhealth.nl</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.500" y="4.500" width="19" height="15" rx="2.500"/><path d="m3 7 9 6.500L21 7"/></svg>
+            <a href="mailto:moniek@circleofhealth.nl" class="editable" data-field="contactEmail" data-link="mailto" data-placeholder="E-mailadres">moniek@circleofhealth.nl</a>
           </li>
           <li>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.38 2 2 0 0 1 3.6 1.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span class="editable" data-field="contactPhone" data-placeholder="+31 6 00 00 00 00">+31 6 00 00 00 00</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.920v3a2 2 0 0 1-2.180 2 19.790 19.790 0 0 1-8.630-3.070A19.500 19.500 0 0 1 4.690 12 19.790 19.790 0 0 1 1.630 3.380 2 2 0 0 1 3.600 1.200h3a2 2 0 0 1 2 1.720c.127.960.361 1.903.700 2.810a2 2 0 0 1-.450 2.110L7.910 8.790a16 16 0 0 0 6.290 6.290l.960-.960a2 2 0 0 1 2.110-.450c.907.339 1.850.573 2.810.700A2 2 0 0 1 22 16.920z"/></svg>
+            <a href="" class="editable" data-field="contactPhone" data-link="tel" data-placeholder="Telefoonnummer"></a>
           </li>
           <li>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span class="editable" data-field="contactLocation" data-placeholder="Nederland">Nederland</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span class="editable" data-field="contactLocation" data-placeholder="Plaats of regio"></span>
           </li>
         </ul>
       </div>
 
-      <div class="contact-form-wrap">
+      <div class="contact-form-wrap reveal">
         <form id="contact-form" novalidate>
           <div class="form-row">
             <label for="cf-name">Naam</label>
-            <input type="text" id="cf-name" name="name" placeholder="Jouw naam" required autocomplete="name" />
+            <input type="text" id="cf-name" name="name" required autocomplete="name" />
           </div>
           <div class="form-row">
             <label for="cf-email">E-mailadres</label>
-            <input type="email" id="cf-email" name="email" placeholder="jouw@email.nl" required autocomplete="email" />
+            <input type="email" id="cf-email" name="email" required autocomplete="email" inputmode="email" />
+          </div>
+          <div class="form-row">
+            <label for="cf-phone">Telefoonnummer <span class="optional">(mag, hoeft niet)</span></label>
+            <input type="tel" id="cf-phone" name="phone" autocomplete="tel" inputmode="tel" />
+          </div>
+          <div class="form-row">
+            <label for="cf-topic">Waar gaat het over?</label>
+            <select id="cf-topic" name="topic">
+              <option value="Algemene vraag">Algemene vraag</option>
+            </select>
           </div>
           <div class="form-row">
             <label for="cf-message">Bericht</label>
-            <textarea id="cf-message" name="message" placeholder="Schrijf hier je bericht…" rows="5" required></textarea>
+            <textarea id="cf-message" name="message" rows="5" required></textarea>
           </div>
+          <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <button type="submit" class="btn btn-full" id="cf-submit">Verstuur bericht</button>
-          <p id="cf-feedback" class="form-feedback" aria-live="polite" hidden></p>
+          <p id="cf-feedback" class="form-feedback" role="status" aria-live="polite" hidden></p>
+          <p class="form-note"><span class="editable" data-field="contactPrivacy" data-placeholder="Privacyregel">Je gegevens gebruik ik alleen om op je bericht te reageren.</span></p>
         </form>
       </div>
 

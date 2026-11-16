@@ -47,11 +47,22 @@
   }
 
   // ── Knop bij een dienst: onderwerp alvast invullen ──────────
+  const topic = $('#cf-topic');
+  function buildTopics() {
+    if (!topic) return;
+    const current = topic.value;
+    const names = $$('.card h3').map(h => h.textContent.trim()).filter(Boolean);
+    topic.replaceChildren(...['Algemene vraag', ...names].map(name => new Option(name, name)));
+    if ([...topic.options].some(o => o.value === current)) topic.value = current;
+  }
+  buildTopics();
+  if (topic) ['pointerdown', 'focus'].forEach(type => topic.addEventListener(type, buildTopics));
+
   $$('[data-topic-from]').forEach(btn => btn.addEventListener('click', () => {
-    if (editing()) return;
-    const topic = $('#cf-topic');
+    if (editing() || !topic) return;
+    buildTopics();
     const title = $(`[data-field="${btn.dataset.topicFrom}"]`);
-    if (topic && title) topic.value = title.textContent.trim();
+    if (title) topic.value = title.textContent.trim();
   }));
 
   // ── Contactformulier (e-mail via Web3Forms) ─────────────────
@@ -71,7 +82,7 @@
     const data = Object.fromEntries(
       [...new FormData(form)].map(([key, value]) => [key, String(value).trim()])
     );
-    if (!data.name || !data.email || !data.message) return show('Vul alle velden in.', 'error');
+    if (!data.name || !data.email || !data.message) return show('Vul je naam, e-mailadres en bericht in.', 'error');
     if (!form.checkValidity()) return show('Controleer je e-mailadres.', 'error');
 
     submitBtn.disabled    = true;
