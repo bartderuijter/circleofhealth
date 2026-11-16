@@ -21,6 +21,7 @@ const DEFAULT_COLORS = {
   'hero-bg':     '#faf5ec',
   'over-bg':     '#fbf8f3',
   'diensten-bg': '#f3ece0',
+  'werkwijze-bg': '#fbf8f3',
   'contact-bg':  '#fbf8f3',
   'heading':     '#2e2823',
   'text':        '#453d36',

@@ -25,6 +25,7 @@
   --color-hero-bg:     #faf5ec;
   --color-over-bg:     #fbf8f3;
   --color-diensten-bg: #f3ece0;
+  --color-werkwijze-bg: #fbf8f3;
   --color-contact-bg:  #fbf8f3;
   --color-heading:     #2e2823;
   --color-text:        #453d36;
@@ -75,7 +76,7 @@ body {
 }
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; text-decoration: none; }
-ul { list-style: none; }
+ul, ol { list-style: none; }
 button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
 
 :focus-visible {
@@ -686,6 +687,7 @@ body.edit-mode .photo-tools { display: flex !important; }
   font-size: 1.9rem;
   font-weight: 600;
   line-height: 1.2;
+  font-variant-numeric: lining-nums;
   color: var(--color-heading);
   margin-bottom: 1.1rem;
 }
@@ -723,6 +725,72 @@ body.edit-mode .photo-tools { display: flex !important; }
   }
   .card { padding: 2.25rem 1.9rem 1.9rem; }
   .card-featured { margin-block: -1rem; padding-block: 3.25rem 2.9rem; }
+}
+
+/* ---------- Werkwijze ---------- */
+.section-werkwijze { background: var(--color-werkwijze-bg); }
+.steps {
+  counter-reset: step;
+  display: grid;
+  gap: 2.25rem;
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  max-width: 520px;
+  margin-inline: auto;
+}
+.step {
+  position: relative;
+  padding-left: 4.5rem;
+}
+.step-num {
+  position: absolute;
+  left: 0; top: -.2rem;
+  display: grid;
+  place-items: center;
+  width: 3.25rem; height: 3.25rem;
+  border-radius: 50%;
+  background: var(--color-werkwijze-bg);
+  border: 1.5px solid var(--color-accent);
+  font-family: var(--font-head);
+  font-size: 1.6rem;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+  color: var(--color-accent);
+  z-index: 1;
+}
+/* verbindingslijn tussen de stappen */
+.step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: calc(1.625rem - .75px);
+  top: 3.25rem;
+  bottom: -2.25rem;
+  border-left: 1.5px dashed color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+.step h3 { font-size: 1.6rem; margin-bottom: .4rem; }
+.step p { color: var(--text-light); }
+.section-cta { margin-top: clamp(2.5rem, 6vw, 3.75rem); text-align: center; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .steps .reveal:nth-child(2) { transition-delay: .08s; }
+  .js .steps .reveal:nth-child(3) { transition-delay: .16s; }
+  .js .steps .reveal:nth-child(4) { transition-delay: .24s; }
+}
+@media (min-width: 960px) {
+  .steps {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    max-width: none;
+  }
+  .step { padding-left: 0; padding-top: 4.75rem; }
+  .step-num { top: 0; }
+  .step:not(:last-child)::before {
+    left: 3.25rem;
+    right: -2rem;
+    top: calc(1.625rem - .75px);
+    bottom: auto;
+    border-left: 0;
+    border-top: 1.5px dashed color-mix(in srgb, var(--color-accent) 45%, transparent);
+  }
 }
 
 /* ---------- Contact ---------- */
